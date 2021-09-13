@@ -13,8 +13,6 @@ gray = '#414141'
 green = '#1DD600'
 blue = '#4285F4'
 paleblue = '#C9DAF8'
-
-# Dim Shades
 dimred = '#B52E2E'
 dimblue = '#48629C'
 dimwhite = '#A3A3A3'
@@ -76,6 +74,10 @@ class Game:
         print(F"Question Index set to {self.questionindex}")
         self.correct = 0
 
+        # Generate first question
+        self.generatequestion()
+
+    def generatequestion(self):
         # Set ranges based on difficulty
         addsubmin = 0
         muldivmin = 0
@@ -169,15 +171,15 @@ class Game:
 
         if self.response == self.answer:
             self.correct += 1
-            self.createminiframe("Correct", green, "", F"{self.correct} for {self.questionindex}", 30, 0.45)
+            self.resultpage("Correct", green, "", F"{self.correct} for {self.questionindex}", 30, 0.45)
             
         else:
-            self.createminiframe("Incorrect", red, "{} = {:,g}".format(self.equation, self.answer), F"{self.correct} for {self.questionindex}", 20, 0.5)
+            self.resultpage("Incorrect", red, "{} = {:,g}".format(self.equation, self.answer), F"{self.correct} for {self.questionindex}", 20, 0.5)
     
     def nextquestion(self):
 
         # If below question limit
-        if self.questionindex < 0:
+        if self.questionindex < 10:
             self.generatequestion()
 
         # If question limit reached
@@ -209,6 +211,9 @@ class Game:
 
         # Truncate list to top 5 scorers
         self.profiles = self.profiles[:5]
+
+        # Close file
+        self.savedprofiles.close()
 
     # Page Functions
     def __init__(self):
@@ -286,7 +291,7 @@ class Game:
         self.errorlabel.place(relx = 0.5, rely = 0.7, anchor = CENTER)
 
     # Correct/Incorrect miniframe
-    def createminiframe(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext, currentscoresize, currentscoreheight):
+    def resultpage(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext, currentscoresize, currentscoreheight):
 
         # Dim background
         self.title.config(fg = dimwhite, bg = dimblue)
