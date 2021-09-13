@@ -2,16 +2,17 @@
 class Player:
 
     # Constructor
-    def __init__(self, name, correct, difficulty):
+    def __init__(self, name, correct, difficulty, age):
         self.savename = name
         self.savecorrect = correct
-        self.difficulty = difficulty
+        self.savedifficulty = difficulty
+        self.saveage = age
 
     # Display Name and High Score
-    def saveprofile(self):
+    def saveProfile(self):
         
         # Format profile
-        self.saveprofiletext = F"{self.savename},{self.savecorrect}0%,{self.difficulty}\n"
+        self.saveprofiletext = F"{self.savename},{self.savecorrect}0%,{self.savedifficulty},{self.saveage}\n"
 
         # Save profile into text file
         self.savedprofiles = open('savedprofiles.txt', 'a')

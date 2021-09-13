@@ -17,37 +17,79 @@ dimred = '#B52E2E'
 dimblue = '#48629C'
 dimwhite = '#A3A3A3'
 
+fontA = 'Comic Sans MS'
+fontB = 'Arial'
+
 class Game:
 
-    # Switch page function
-    def switchpage(self, targetpage):
+    # Switch Page Function
+    def switchPage(self, targetpage):
         self.frame.destroy()
         self.frame = Frame(root)
         self.frame.place(width = 840, height = 480, relx = 0.5, rely = 0.5, anchor = CENTER)
         targetpage()
 
-    # Record name as variable and switch frame
+    # Verify Name And Age Function
     def verify(self):
-        self.name = self.nameentry.get()
-        
-        # If response field is EMPTY
-        if self.name == "":
+        validname = False
+        validage = False
 
+        # VERIFY NAME 
+        self.name = self.nameentry.get()
+        self.name_nospace = self.name.replace(" ", "")
+        
+        # Set error label text to blank
+        self.nameerrorlabel.config(text = "")
+
+        # If response field is EMPTY
+        if self.name_nospace == "":
             # Create and place error text under entry box
-            errorlabel = Label(self.frame, text = "Enter your name into the box above.", font = ('Comic Sans MS', 20), fg = red)
-            errorlabel.place(relx = 0.5, rely = 0.65, anchor = CENTER)
+            self.nameerrorlabel.config(text = "Enter your name into the box above.")
+            self.nameentry.delete(0, END)
 
         # If name entered
         else:
-            self.switchpage(self.difficultypage)
+            validname = True
 
-    # Title Label function
-    def createtitlelabel(self, titletext):
-        self.title = Label(self.frame, text = titletext, font = ('Comic Sans MS', 50), fg = white, bg = blue)
+        # VERIFY AGE MODULE
+        # Set error text to blank
+        self.ageerrorlabel.config(text = "")
+        self.age = self.ageentry.get()
+
+        try:
+            # Conversions
+            self.age_nospace = self.age.replace(" ", "")
+        
+            if self.age_nospace == "":
+                # Configure error text under entry box
+                self.ageerrorlabel.config(text = "Enter your age into the box above.")
+                self.ageentry.delete(0, END)
+
+            else:
+                self.age_intnospace = int(self.age_nospace)
+                if self.age_intnospace in range(13, 16):
+                    validage = True
+                else:
+                    self.ageerrorlabel.config(text = "Enter a number between 13 and 15")
+                    self.ageentry.delete(0, END)
+        except:
+            # Configure error text under entry box
+            ageerrorlabel = Label(self.frame, text = "Enter a valid number.", font = (fontA, 20), fg = red)
+            ageerrorlabel.place(relx = 0.9, rely = 0.1, anchor = CENTER)
+            self.ageentry.delete(0, END)
+
+        print(F"Name {validname}. Age {validage}")
+
+        if validname and validage:
+            self.switchPage(self.difficultyPage)
+
+    # Title Label Function
+    def createTitleLabel(self, titletext):
+        self.title = Label(self.frame, text = titletext, font = (fontA, 50), fg = white, bg = blue)
         self.title.place(width = 840, relx = 0.5, rely = 0, anchor = N)
 
     # Change Difficulty Function
-    def changedifficulty(self):
+    def changeDifficulty(self):
         
         if self.difficultyindex <= 1:
             self.difficultyindex += 1
@@ -67,7 +109,7 @@ class Game:
         self.difficultylabel2.config(text = difficultylabel2)
 
     # Initialize Game Function (Setting variables)
-    def initializegame(self):
+    def initializeGame(self):
 
         # Set variables
         self.questionindex = 0
@@ -75,9 +117,11 @@ class Game:
         self.correct = 0
 
         # Generate first question
-        self.generatequestion()
+        self.generateQuestion()
 
-    def generatequestion(self):
+    # Generate Question Function
+    def generateQuestion(self):
+
         # Set ranges based on difficulty
         addsubmin = 0
         muldivmin = 0
@@ -110,37 +154,36 @@ class Game:
 
         # If Addition/Subtraction
         if signindex <= 1:
-            numberone = random.randint(0, self.addsubmax)
-            numbertwo = random.randint(0, self.addsubmax)
+            self.numberone = random.randint(0, self.addsubmax)
+            self.numbertwo = random.randint(0, self.addsubmax)
             if signindex == 1:
-                sign = "+"
-                self.answer = float(numberone + numbertwo)
+                self.sign = "+"
+                self.answer = float(self.numberone + self.numbertwo)
             else:
-                sign = "-"
-                self.answer = float(numberone - numbertwo)
+                self.sign = "-"
+                self.answer = float(self.numberone - self.numbertwo)
         
         # If Multiplication/Division
         else:
-            numberone = random.randint(0, self.muldivmax)
-            numbertwo = random.randint(0, self.muldivmax)
+            self.numberone = random.randint(0, self.muldivmax)
+            self.numbertwo = random.randint(0, self.muldivmax)
             if signindex == 3:
-                sign = "×"
-                self.answer = float(numberone * numbertwo)
+                self.sign = "×"
+                self.answer = float(self.numberone * self.numbertwo)
             else:
-                sign = "÷"
+                self.sign = "÷"
 
                 # Logic to make sure answer is a whole number
-                numberone = numberone * numbertwo
-                self.answer = float(numberone / numbertwo)
+                self.numberone = self.numberone * self.numbertwo
+                self.answer = float(self.numberone / self.numbertwo)
 
-        # Create equation strings
-        self.equation = F"{numberone} {sign} {numbertwo}"
-        self.questionindextext = F"Question {self.questionindex} of 10"
+        # Print answer
+        print("generateQuestion", self.answer)
 
         # Initiate question page
-        self.switchpage(self.questionpage)
+        self.switchPage(self.questionPage)
 
-    # Analyze response
+    # Submit Response Function
     def submit(self):
 
         # Record response as variable
@@ -150,7 +193,7 @@ class Game:
         # Try if response is valid number
         try:
             self.response = float(self.responseentry.get())
-            self.markresponse()
+            self.markResponse()
 
         # If response is NOT a valid number
         except ValueError:
@@ -158,52 +201,57 @@ class Game:
             # If response field is EMPTY
             if self.response == "":
                 self.errorlabel.config(text = "Enter a number into the box above.")
+                self.responseentry.delete(0, END)
         
             # If invalid response entered
             else:
                 self.errorlabel.config(text = F"{self.response} is not a valid number.")
+                self.responseentry.delete(0, END)
 
-    # If response IS a valid integer
-    def markresponse(self):
+    # Mark Response Function
+    def markResponse(self):
         
         # Create and place label based on if answer correct or incorrect
         self.submitbutton.config(state = DISABLED, bg = gray)
 
         if self.response == self.answer:
             self.correct += 1
-            self.resultpage("Correct", green, "", F"{self.correct} for {self.questionindex}", 30, 0.45)
+            self.resultPage("Correct", green, "", F"{self.correct} for {self.questionindex}", 30, 0.45)
             
         else:
-            self.resultpage("Incorrect", red, "{} = {:,g}".format(self.equation, self.answer), F"{self.correct} for {self.questionindex}", 20, 0.5)
+            self.resultPage("Incorrect", red, "{} = {:,g}".format(F"{self.numberone} {self.sign} {self.numbertwo}", self.answer), F"{self.correct} for {self.questionindex}", 20, 0.5)
     
-    def nextquestion(self):
+    # Next Question Function
+    def nextQuestion(self):
 
         # If below question limit
         if self.questionindex < 10:
-            self.generatequestion()
+            self.generateQuestion()
 
         # If question limit reached
         else:
-            self.switchpage(self.gameoverpage)
+            self.switchPage(self.gameOverPage)
 
+    # Store Profile Function  
+    def storeProfiles(self):
 
-    # Read and save profile   
-    def storeprofiles(self):
+        # Open savedprofiles.txt file
+        self.savedprofiles = open('savedprofiles.txt', 'a')
 
         # Create saveplayer object in Player class
-        saveplayer = Player(self.name, self.correct, self.difficulties[self.difficultyindex])
+        saveplayer = Player(self.name, self.correct, self.difficulties[self.difficultyindex], self.age_intnospace)
 
         # Log instance of player
-        Player.saveprofile(saveplayer)
+        Player.saveProfile(saveplayer)
+        self.savedprofiles.close()
 
-        # Read .txt file and compile list of profile objects 
-        self.profiles = []
+        # Compile list of profile objects 
         self.savedprofiles = open('savedprofiles.txt').readlines()
-
+        self.profiles = []
         for line in self.savedprofiles:
             row = line.split(',')
-            name, correct, difficulty = [i.strip() for i in row]
-            profile = Player(name, correct, difficulty)
+            name, correct, difficulty, age = [i.strip() for i in row]
+            profile = Player(name, correct, difficulty, age)
             self.profiles = self.profiles + [profile]
 
         # Sort by highest to lowest correct answers
@@ -212,28 +260,29 @@ class Game:
         # Truncate list to top 5 scorers
         self.profiles = self.profiles[:5]
 
-        # Close file
-        self.savedprofiles.close()
-
-    # Page Functions
+    # CONSTRUCTOR
     def __init__(self):
         self.name = ""
-        self.namepage()
+        self.namePage()
 
     # Name Page
-    def namepage(self):
+    def namePage(self):
 
         # Create initial frame
         self.frame = Frame(root)
         self.frame.place(width = 840, height = 480, relx = 0.5, rely = 0.5, anchor = CENTER)
 
         # Create Title Label
-        self.createtitlelabel("Math Game")
+        self.createTitleLabel("Math Game")
         
         # Defining label, entry and button
-        namelabel = Label(self.frame, text = "Name:", font = ('Comic Sans MS', 30), fg = gray)
-        self.nameentry = Entry(self.frame, font = ('Comic Sans MS', 30))
-        nextbutton = Button(self.frame, text = "Next", command = self.verify, font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+        namelabel = Label(self.frame, text = "Name:", font = (fontA, 30), fg = gray)
+        self.nameentry = Entry(self.frame, font = (fontB, 30))
+        self.nameerrorlabel = Label(self.frame, text = "", font = (fontA, 20), fg = red)
+        agelabel = Label(self.frame, text = "Age:", font = (fontA, 25), fg = white, bg = blue)
+        self.ageentry = Entry(self.frame, font = (fontB, 25))
+        self.ageerrorlabel = Label(self.frame, text = "", font = (fontA, 15), fg = red)
+        nextbutton = Button(self.frame, text = "Next", command = self.verify, font = (fontA, 25), fg = white, bg = blue, borderwidth = 12)
 
         # Enter previously entered name on repeat visits
         self.nameentry.insert(0, self.name)
@@ -241,13 +290,17 @@ class Game:
         # Place widgets
         namelabel.place(relx = 0.25, rely = 0.5, anchor = CENTER)
         self.nameentry.place(width = 260, height = 80, relx = 0.5, rely = 0.5, anchor = CENTER)
+        self.nameerrorlabel.place(relx = 0.5, rely = 0.65, anchor = CENTER)
+        agelabel.place(relx = 0.85, rely = 0.1, anchor = CENTER)
+        self.ageentry.place(width = 60, height = 60, relx = 0.95, rely = 0.1, anchor = CENTER)
+        self.ageerrorlabel.place(relx = 0.8, rely = 0.25, anchor = CENTER)
         nextbutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
 
     # Difficulty Page
-    def difficultypage(self):
+    def difficultyPage(self):
 
         # Create and place title widget
-        self.createtitlelabel("Select Difficulty")
+        self.createTitleLabel("Select Difficulty")
 
         # Setting starting variables for Change Difficulty Function Loop
         self.difficultyindex = 0
@@ -257,12 +310,12 @@ class Game:
         self.difficultylabels2 = ["", "x / ÷ : Up to 12" ,"x / ÷ : Up to 100"]
 
         # Define widgets
-        clicktochange = Label(self.frame, text = "Click to Change", font = ('Comic Sans MS', 20), fg = gray)
-        self.difficultybutton = Button(self.frame, text = "Easy", command = self.changedifficulty, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
-        self.difficultylabel1 = Label(self.frame, text = "+ / - : Up to 100", font = ('Comic Sans MS', 24), fg = gray)
-        self.difficultylabel2 = Label(self.frame, text = "", font = ('Comic Sans MS', 24), fg = gray)
-        startbutton = Button(self.frame, text = "Start", command = self.initializegame, font = ('Comic Sans MS', 25), fg = white, bg = green, borderwidth = 12)
-        backbutton = Button(self.frame, text = "Back", command = lambda: self.switchpage(self.namepage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+        clicktochange = Label(self.frame, text = "Click to Change", font = (fontA, 20), fg = gray)
+        self.difficultybutton = Button(self.frame, text = "Easy", command = self.changeDifficulty, font = (fontA, 30), fg = white, bg = blue, borderwidth = 12)
+        self.difficultylabel1 = Label(self.frame, text = "+ / - : Up to 100", font = (fontA, 24), fg = gray)
+        self.difficultylabel2 = Label(self.frame, text = "", font = (fontA, 24), fg = gray)
+        startbutton = Button(self.frame, text = "Start", command = self.initializeGame, font = (fontA, 25), fg = white, bg = green, borderwidth = 12)
+        backbutton = Button(self.frame, text = "Back", command = lambda: self.switchPage(self.namePage), font = (fontA, 25), fg = white, bg = blue, borderwidth = 12)
         
         # Place widgets
         clicktochange.place(relx = 0.5, rely = 0.325, anchor = CENTER)
@@ -273,25 +326,25 @@ class Game:
         backbutton.place(width = 170, height = 80, relx = 0.15, rely = 0.85, anchor = CENTER)
 
     # Question Page
-    def questionpage(self):
+    def questionPage(self):
 
         # Create and place title widget (Define under variable as it must be configurable)
-        self.questionindexlabel = self.createtitlelabel(self.questionindextext)
+        self.questionindexlabel = self.createTitleLabel(F"Question {self.questionindex} of 10")
 
         # Define widgets
-        self.equationlabel = Label(self.frame, text = self.equation, font = ("Arial", 40))
-        self.responseentry = Entry(self.frame, font = ('Comic Sans MS', 30))
-        self.submitbutton = Button(self.frame, text = "Submit", command = self.submit, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        self.equationlabel = Label(self.frame, text = F"{self.numberone} {self.sign} {self.numbertwo}", font = (fontB, 40))
+        self.responseentry = Entry(self.frame, font = (fontB, 30))
+        self.submitbutton = Button(self.frame, text = "Submit", command = self.submit, font = (fontA, 30), fg = white, bg = blue, borderwidth = 12)
         
         # Place widgets
-        self.errorlabel = Label(self.frame, text = "", font = ('Comic Sans MS', 20), fg = red)
+        self.errorlabel = Label(self.frame, text = "", font = (fontA, 20), fg = red)
         self.equationlabel.place(relx = 0.5, rely = 0.4, anchor = CENTER)
         self.responseentry.place(width = 260, height = 80, relx = 0.5, rely = 0.55, anchor = CENTER)
         self.submitbutton.place(width = 180, height = 80, relx = 0.5, rely = 0.85, anchor = CENTER)
         self.errorlabel.place(relx = 0.5, rely = 0.7, anchor = CENTER)
 
-    # Correct/Incorrect miniframe
-    def resultpage(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext, currentscoresize, currentscoreheight):
+    # Result Page
+    def resultPage(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext, currentscoresize, currentscoreheight):
 
         # Dim background
         self.title.config(fg = dimwhite, bg = dimblue)
@@ -299,10 +352,10 @@ class Game:
 
         # Define widgets
         self.miniframe = Frame(self.frame, highlightbackground = bgcolor, highlightthickness = 10)
-        miniframetitle = Label(self.miniframe, text = miniframetitletext, font = ('Comic Sans MS', 40), fg = white, bg = bgcolor)
-        correctanswer = Label(self.miniframe, text = correctanswertext, font = ('Comic Sans MS', 20), fg = gray)
-        currentscore = Label(self.miniframe, text = currentscoretext, font = ('Comic Sans MS', currentscoresize), fg = gray)
-        nextbutton = Button(self.miniframe, text = "Next", command = self.nextquestion, font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+        miniframetitle = Label(self.miniframe, text = miniframetitletext, font = (fontA, 40), fg = white, bg = bgcolor)
+        correctanswer = Label(self.miniframe, text = correctanswertext, font = (fontA, 20), fg = gray)
+        currentscore = Label(self.miniframe, text = currentscoretext, font = (fontA, currentscoresize), fg = gray)
+        nextbutton = Button(self.miniframe, text = "Next", command = self.nextQuestion, font = (fontA, 25), fg = white, bg = blue, borderwidth = 12)
         
         # Place widgets
         self.miniframe.place(width = 360, height = 265, relx = 0.5, rely = 0.5, anchor = CENTER)
@@ -312,16 +365,16 @@ class Game:
         nextbutton.place(width = 180, height = 80, relx = 0.5, rely = 0.8, anchor = CENTER)
 
     # Game Over Page
-    def gameoverpage(self):
+    def gameOverPage(self):
 
         # Create and place title label
-        self.createtitlelabel("Game Over")
+        self.createTitleLabel("Game Over")
 
         # Define widgets
-        scoretextlabel = Label(self.frame, text = "You got             correct", font = ('Comic Sans MS', 40), fg = gray)
-        scorelabel = Label(self.frame, text = F"{self.correct} / 10 ", font = ('Comic Sans MS', 40), fg = blue)
-        replaybutton = Button(self.frame, text = "Replay", command = lambda: self.switchpage(self.difficultypage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
-        continuebutton = Button(self.frame, text = "Continue", command = lambda: self.switchpage(self.scoreboardpage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+        scoretextlabel = Label(self.frame, text = "You got             correct", font = (fontA, 40), fg = gray)
+        scorelabel = Label(self.frame, text = F"{self.correct} / 10 ", font = (fontA, 40), fg = blue)
+        replaybutton = Button(self.frame, text = "Replay", command = lambda: self.switchPage(self.difficultyPage), font = (fontA, 25), fg = white, bg = blue, borderwidth = 12)
+        continuebutton = Button(self.frame, text = "Continue", command = lambda: self.switchPage(self.scoreboardPage), font = (fontA, 25), fg = white, bg = blue, borderwidth = 12)
 
         # Place widgets
         scoretextlabel.place(relx = 0.495, rely = 0.5, anchor = CENTER)
@@ -330,18 +383,18 @@ class Game:
         continuebutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
 
         # Initialize profile storing
-        self.storeprofiles()
+        self.storeProfiles()
     
-    # New Player
-    def newplayer(self):
+    # New Player Function
+    def newPlayer(self):
         self.name = ""
-        self.switchpage(self.namepage)
+        self.switchPage(self.namePage)
 
     # Scoreboard Page
-    def scoreboardpage(self):
+    def scoreboardPage(self):
 
         # Create title label
-        self.createtitlelabel("Scoreboard")
+        self.createTitleLabel("Scoreboard")
 
         # Defining table
         scoretable = Frame(self.frame, bg = red)
@@ -355,9 +408,9 @@ class Game:
         row5 = Frame(scoretable, width = 840, height = 40, bg = paleblue)
 
         # Define top row labels
-        scoretablename = Label(scoretable, text = "Name", font = ('Comic Sans MS', 16), fg = white, bg = dimblue)
-        scoretablepct = Label(scoretable, text = "Correct", font = ('Comic Sans MS', 16), fg = white, bg = dimblue)
-        scoretabledifficulty = Label(scoretable, text = "Difficulty", font = ('Comic Sans MS', 16), fg = white, bg = dimblue)
+        scoretablename = Label(scoretable, text = "Name", font = (fontA, 16), fg = white, bg = dimblue)
+        scoretablepct = Label(scoretable, text = "Correct", font = (fontA, 16), fg = white, bg = dimblue)
+        scoretabledifficulty = Label(scoretable, text = "Difficulty", font = (fontA, 16), fg = white, bg = dimblue)
         gridy = 40
 
         for index, value in enumerate(self.profiles):
@@ -369,9 +422,9 @@ class Game:
                 alternating = paleblue
 
             # Define labels
-            col0 = Label(scoretable, text = self.profiles[index].savename, width = 0, font = ('Comic Sans MS', 16), bg = alternating)
-            col1 = Label(scoretable, text = self.profiles[index].savecorrect, font = ('Comic Sans MS', 16), bg = alternating)
-            col2 = Label(scoretable, text = self.profiles[index].difficulty, font = ('Comic Sans MS', 16), bg = alternating)
+            col0 = Label(scoretable, text = self.profiles[index].savename, width = 0, font = (fontA, 16), bg = alternating)
+            col1 = Label(scoretable, text = self.profiles[index].savecorrect, font = (fontA, 16), bg = alternating)
+            col2 = Label(scoretable, text = self.profiles[index].savedifficulty, font = (fontA, 16), bg = alternating)
 
             # Place labels
             col0.place(x = 0, y = gridy, anchor = NW)
@@ -381,8 +434,8 @@ class Game:
             gridy += 40
 
         # Defining widgets
-        replaybutton = Button(self.frame, text = "Replay", command = lambda: self.switchpage(self.difficultypage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
-        newplayerbutton = Button(self.frame, text = "New Player", command = self.newplayer, font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+        replaybutton = Button(self.frame, text = "Replay", command = lambda: self.switchPage(self.difficultyPage), font = (fontA, 25), fg = white, bg = blue, borderwidth = 12)
+        newplayerbutton = Button(self.frame, text = "New Player", command = self.newPlayer, font = (fontA, 25), fg = white, bg = blue, borderwidth = 12)
 
         # Place scoreboard rows
         row0.place(x = 0, y = 0, anchor = NW)
