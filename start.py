@@ -1,10 +1,19 @@
 import random
+from PIL import Image, ImageTk
 from player import *
 from tkinter import *
+
 
 root = Tk()
 root.title("Math Game")
 root.geometry("840x480")
+
+# Color Palette
+white = '#FFFFFF'
+red = '#FF0000'
+gray = '#414141'
+green = '#1DD600'
+blue = '#4285F4'
 
 # Page Functions
 class App:
@@ -14,13 +23,31 @@ class App:
         self.frame = Frame(root)
         self.frame.place(width = 840, height = 480, relx = 0.5, rely = 0.5, anchor = CENTER)
 
+    def createminiframe(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext):
+
+        # Correct/Incorrect miniframe
+        self.miniframe = Frame(root, highlightbackground = bgcolor, highlightthickness = 10)
+        self.miniframe.place(width = 360, height = 265, relx = 0.5, rely = 0.5, anchor = CENTER)
+
+        miniframetitle = Label(self.miniframe, text = miniframetitletext, font = ('Comic Sans MS', 40), fg = white, bg = bgcolor)
+        miniframetitle.place(width = 360, height = 60, relx = 0.5, rely = 0, anchor = N)
+
+        correctanswer = Label(self.miniframe, text = correctanswertext, font = ('Comic Sans MS', 20), fg = gray)
+        correctanswer.place(relx = 0.5, rely = 0.35, anchor = CENTER)
+
+        currentscore = Label(self.miniframe, text = currentscoretext, font = ('Comic Sans MS', 20), fg = gray)
+        currentscore.place(relx = 0.5, rely = 0.5, anchor = CENTER)
+
+        nextbutton = Button(self.miniframe, text = "Next", command = self.nextquestion, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        nextbutton.place(width = 180, height = 80, relx = 0.5, rely = 0.8, anchor = CENTER)
+
     # Close Frame Function
     def closeframe(self):
         self.frame.destroy()
 
     # Title Label function
     def titlelabel(self, titletext):
-        self.title = Label(self.frame, text = titletext, font = ('Comic Sans MS', 50), fg = '#FFFFFF', bg = '#4285F4')
+        self.title = Label(self.frame, text = titletext, font = ('Comic Sans MS', 50), fg = white, bg = blue)
         self.title.place(width = 840, relx = 0.5, rely = 0, anchor = N)
 
     # Contructor + Name Page
@@ -30,14 +57,14 @@ class App:
         # Creating and placing Labels
         self.titlelabel("Math Game")
         
-        namelabel = Label(self.frame, text = "Name:", font = ('Comic Sans MS', 30), fg = '#414141')
+        namelabel = Label(self.frame, text = "Name:", font = ('Comic Sans MS', 30), fg = gray)
         namelabel.place(relx = 0.25, rely = 0.5, anchor = CENTER)
 
         self.nameentry = Entry(self.frame, font = ('Comic Sans MS', 30))
         self.nameentry.place(width = 260, height = 80, relx = 0.5, rely = 0.5, anchor = CENTER)
 
-        nextbutton = Button(self.frame, text = "Next", command = self.verify, font = ('Comic Sans MS', 30), fg = '#FFFFFF', bg = '#4285F4', borderwidth = 12)
-        nextbutton.place(width = 180, height = 80, relx = 0.80, rely = 0.8, anchor = CENTER)
+        nextbutton = Button(self.frame, text = "Next", command = self.verify, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        nextbutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
 
     # Record name as variable and switch frame
     def verify(self):
@@ -48,7 +75,7 @@ class App:
         if self.name == "":
 
             # Create and place error text under entry box
-            errorlabel = Label(self.frame, text = "Enter your name into the box above.", font = ('Comic Sans MS', 20), fg = '#FF0000')
+            errorlabel = Label(self.frame, text = "Enter your name into the box above.", font = ('Comic Sans MS', 20), fg = red)
             errorlabel.place(relx = 0.5, rely = 0.65, anchor = CENTER)
 
         # If name entered
@@ -66,20 +93,33 @@ class App:
         self.difficultyindex = 0
         print(F"Index Set to 0")
         self.difficulties = ["Easy", "Medium", "Hard"]
+        self.difficultylabels1 = ["+ / - : Up to 100", "+ / - : Up to 100", "+ / - : Up to 1000"]
+        self.difficultylabels2 = ["", "x / ÷ : Up to 12" ,"x / ÷ : Up to 100"]
 
         # Creating and placing Labels
         self.titlelabel("Select Difficulty")
 
-        clicktochange = Label(self.frame, text = "Click to Change", font = ('Comic Sans MS', 20))
+        clicktochange = Label(self.frame, text = "Click to Change", font = ('Comic Sans MS', 20), fg = gray)
         clicktochange.place(relx = 0.5, rely = 0.325, anchor = CENTER)
 
-        self.difficultybutton = Button(self.frame, text = "Easy", command = self.changedifficulty, font = ('Comic Sans MS', 30), fg = '#FFFFFF', bg = '#4285F4', borderwidth = 12)
+        self.difficultybutton = Button(self.frame, text = "Easy", command = self.changedifficulty, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
         self.difficultybutton.place(width = 260, height = 80, relx = 0.5, rely = 0.45, anchor = CENTER)
-    
 
-        startbutton = Button(self.frame, text = "Start", command = self.play, font = ('Comic Sans MS', 30), fg = '#FFFFFF', bg = '#1DD600', borderwidth = 12)
-        startbutton.place(width = 170, height = 80, relx = 0.80, rely = 0.8, anchor = CENTER)
+        self.difficultylabel1 = Label(self.frame, text = "+ / - : Up to 100", font = ('Comic Sans MS', 24), fg = gray)
+        self.difficultylabel1.place(relx = 0.5, rely = 0.6, anchor = CENTER)
+        self.difficultylabel2 = Label(self.frame, text = "", font = ('Comic Sans MS', 24), fg = gray)
+        self.difficultylabel2.place(relx = 0.5, rely = 0.7, anchor = CENTER)
 
+        startbutton = Button(self.frame, text = "Start", command = self.play, font = ('Comic Sans MS', 30), fg = white, bg = green, borderwidth = 12)
+        startbutton.place(width = 170, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
+
+        backbutton = Button(self.frame, text = "Back", command = self.back, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        backbutton.place(width = 170, height = 80, relx = 0.15, rely = 0.85, anchor = CENTER)
+
+    def back(self):
+        self.closeframe()
+        self.__init__()
+        
     # Change Difficulty Function
     def changedifficulty(self):
         
@@ -92,6 +132,13 @@ class App:
         # Change difficulty button text 
         difficulty = self.difficulties[self.difficultyindex]
         self.difficultybutton.config(text = difficulty)
+
+        # Change difficulty label text
+        difficultylabel1 = self.difficultylabels1[self.difficultyindex]
+        self.difficultylabel1.config(text = difficultylabel1)
+
+        difficultylabel2 = self.difficultylabels2[self.difficultyindex]
+        self.difficultylabel2.config(text = difficultylabel2)
     
     # Start Game Function
     def play(self):
@@ -146,8 +193,8 @@ class App:
 
         # If Addition/Subtraction
         if signindex <= 1:
-            numberone = random.randint(1, self.addsubmax)
-            numbertwo = random.randint(1, self.addsubmax)
+            numberone = random.randint(0, self.addsubmax)
+            numbertwo = random.randint(0, self.addsubmax)
             if signindex == 1:
                 sign = "+"
                 self.answer = float(numberone + numbertwo)
@@ -157,8 +204,8 @@ class App:
         
         # If Multiplication/Division
         else:
-            numberone = random.randint(1, self.muldivmax)
-            numbertwo = random.randint(1, self.muldivmax)
+            numberone = random.randint(0, self.muldivmax)
+            numbertwo = random.randint(0, self.muldivmax)
             if signindex == 3:
                 sign = "×"
                 self.answer = float(numberone * numbertwo)
@@ -174,11 +221,18 @@ class App:
         self.questionindexlabel = F"Question {self.questionindex} of 10"
         
         # Gameplay Displayed Page Setup
-        Label(self.frame, text = self.questionindexlabel).grid(row = 0, column = 1, pady = 20)
-        Label(self.frame, text = self.equation, font = ("Arial", 50)).grid(row = 2, column = 1)
-        self.responseentry = Entry(self.frame)
-        self.responseentry.grid(row = 3, column = 1)
-        Button(self.frame, text = "Submit", command = self.submit).grid(row = 3, column = 2)
+        self.titlelabel(self.questionindexlabel)
+        equationlabel = Label(self.frame, text = self.equation, font = ("Arial", 40))
+        equationlabel.place(relx = 0.5, rely = 0.4, anchor = CENTER)
+
+        self.responseentry = Entry(self.frame, font = ('Comic Sans MS', 30))
+        self.responseentry.place(width = 260, height = 80, relx = 0.5, rely = 0.55, anchor = CENTER)
+
+        self.submitbutton = Button(self.frame, text = "Submit", command = self.submit, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        self.submitbutton.place(width = 180, height = 80, relx = 0.5, rely = 0.85, anchor = CENTER)
+
+        self.errorlabel = Label(self.frame, text = "blank", font = ('Comic Sans MS', 20), fg = red)
+        self.errorlabel.place(relx = 0.5, rely = 0.7, anchor = CENTER)
 
     # Analyze response
     def submit(self):
@@ -195,57 +249,32 @@ class App:
         # If response is NOT a valid number
         except ValueError:
 
-            # Create error window
-            errorwindow = Tk()
-
-            # Close error window function
-            def closewindow():
-                errorwindow.destroy()
-
-            # Create and place labels and button
-
             # If response field is EMPTY
             if self.response == "":
-                invalidresponselabel = F"Enter a number into the answer field."
-
+                self.errorlabel.config(text = "Enter a number into the box above.")
+        
             # If invalid response entered
             else:
-                invalidresponselabel = F"{self.response} is not a valid number."
-            Label(errorwindow, text = invalidresponselabel).grid(row = 0, column = 1)
-            Button(errorwindow, text = "Retry", command = closewindow).grid(row = 1, column = 1)
-
-            # Initialize Tkinter error window
-            errorwindow.mainloop
-
-            print("Invalid")
-
+                self.errorlabel.config(text = F"{self.response} is not a valid number.")
 
     def markresponse(self):
         # If response IS a valid integer
 
-        # Close frame, create Correct/Incorrect frame
-        self.closeframe()
-        self.createnewframe()
-
         # Create and place label based on if answer correct or incorrect
-        if self.response == self.answer:
-            print("Correct")
-            Label(self.frame, text = "Correct").grid(row = 0, column = 1)
-            self.correctresponses += 1
-        else:
-            print("Incorrect")
-            Label(self.frame, text = "Incorrect").grid(row = 1, column = 1)       
+        self.submitbutton.config(state = DISABLED, bg = gray)
 
-        # Place current score label
-        currentscorelabel = F"{self.correctresponses} of {self.questionindex}"
-        Label(self.frame, text = currentscorelabel)
-        Button(self.frame, text = "Next", command = self.nextquestion).grid(row = 2, column = 1)
+        if self.response == self.answer:
+            self.correctresponses += 1
+            self.createminiframe("Correct", green, "", F"{self.correctresponses} for {self.questionindex}")
+            
+        else:
+            self.createminiframe("Incorrect", red, F"{self.equation} = {self.answer}", F"{self.correctresponses} for {self.questionindex}")     
         
     def nextquestion(self):
         self.closeframe()
 
         # If below question limit
-        if self.questionindex < 1:
+        if self.questionindex < 10:
             self.generatequestion()
 
         # If question limit reached
