@@ -4,7 +4,7 @@ from tkinter import *
 
 root = Tk()
 root.title("Math Game")
-root.geometry("400x300")
+root.geometry("840x480")
 
 # Page Functions
 class App:
@@ -12,22 +12,32 @@ class App:
     # Create new frame function
     def createnewframe(self):
         self.frame = Frame(root)
-        self.frame.grid()
+        self.frame.place(width = 840, height = 480, relx = 0.5, rely = 0.5, anchor = CENTER)
 
     # Close Frame Function
     def closeframe(self):
         self.frame.destroy()
+
+    # Title Label function
+    def titlelabel(self, titletext):
+        self.title = Label(self.frame, text = titletext, font = ('Comic Sans MS', 50), fg = '#FFFFFF', bg = '#4285F4')
+        self.title.place(width = 840, relx = 0.5, rely = 0, anchor = N)
 
     # Contructor + Name Page
     def __init__(self):
         self.createnewframe()
 
         # Creating and placing Labels
-        title = Label(self.frame, text = "Math Game").grid(row = 0, column = 1, pady = 20)
-        namelabel = Label(self.frame, text = "Name:").grid(row = 1, column = 0)
-        self.nameentry = Entry(self.frame)
-        self.nameentry.grid(row = 1, column = 1)
-        startbutton = Button(self.frame, text = "Start", command = self.verify).grid(row = 2, column = 2)
+        self.titlelabel("Math Game")
+        
+        namelabel = Label(self.frame, text = "Name:", font = ('Comic Sans MS', 30), fg = '#414141')
+        namelabel.place(relx = 0.25, rely = 0.5, anchor = CENTER)
+
+        self.nameentry = Entry(self.frame, font = ('Comic Sans MS', 30))
+        self.nameentry.place(width = 260, height = 80, relx = 0.5, rely = 0.5, anchor = CENTER)
+
+        nextbutton = Button(self.frame, text = "Next", command = self.verify, font = ('Comic Sans MS', 30), fg = '#FFFFFF', bg = '#4285F4', borderwidth = 12)
+        nextbutton.place(width = 180, height = 80, relx = 0.80, rely = 0.8, anchor = CENTER)
 
     # Record name as variable and switch frame
     def verify(self):
@@ -37,20 +47,9 @@ class App:
         # If response field is EMPTY
         if self.name == "":
 
-            # Create error window
-            errorwindow = Tk()
-
-            # Close error window function
-            def closewindow():
-                errorwindow.destroy()
-            invalidresponselabel = F"Enter your name into the answer field."
-            Label(errorwindow, text = invalidresponselabel).grid(row = 0, column = 1)
-            Button(errorwindow, text = "Retry", command = closewindow).grid(row = 1, column = 1)
-
-            # Initialize Tkinter error window
-            errorwindow.mainloop
-
-            print("Invalid")
+            # Create and place error text under entry box
+            errorlabel = Label(self.frame, text = "Enter your name into the box above.", font = ('Comic Sans MS', 20), fg = '#FF0000')
+            errorlabel.place(relx = 0.5, rely = 0.65, anchor = CENTER)
 
         # If name entered
         else:
@@ -69,11 +68,17 @@ class App:
         self.difficulties = ["Easy", "Medium", "Hard"]
 
         # Creating and placing Labels
-        title = Label(self.frame, text = "Select Difficulty").grid(row = 0, column = 1, pady = 20)
-        clicktochange = Label(self.frame, text = "Click to Change").grid(row = 1, column = 1)
-        self.difficultybutton = Button(self.frame, text = "Easy", command = self.changedifficulty)
-        self.difficultybutton.grid(row = 2, column = 1)
-        playbutton = Button(self.frame, text = "Play", command = self.play).grid(row = 2, column = 2)
+        self.titlelabel("Select Difficulty")
+
+        clicktochange = Label(self.frame, text = "Click to Change", font = ('Comic Sans MS', 20))
+        clicktochange.place(relx = 0.5, rely = 0.325, anchor = CENTER)
+
+        self.difficultybutton = Button(self.frame, text = "Easy", command = self.changedifficulty, font = ('Comic Sans MS', 30), fg = '#FFFFFF', bg = '#4285F4', borderwidth = 12)
+        self.difficultybutton.place(width = 260, height = 80, relx = 0.5, rely = 0.45, anchor = CENTER)
+    
+
+        startbutton = Button(self.frame, text = "Start", command = self.play, font = ('Comic Sans MS', 30), fg = '#FFFFFF', bg = '#1DD600', borderwidth = 12)
+        startbutton.place(width = 170, height = 80, relx = 0.80, rely = 0.8, anchor = CENTER)
 
     # Change Difficulty Function
     def changedifficulty(self):
@@ -178,15 +183,16 @@ class App:
     # Analyze response
     def submit(self):
 
-        # Record response as integer variable
+        # Record response as variable
         self.response = self.responseentry.get()
         self.response = self.response.replace(" ", "")
 
+        # Try if response is valid number
         try:
             self.response = float(self.responseentry.get())
             self.markresponse()
-            
-        # If response is NOT a valid integer
+
+        # If response is NOT a valid number
         except ValueError:
 
             # Create error window
@@ -259,12 +265,21 @@ class App:
 
             # Instance of player
             Player.displayprofile(newplayer)
+            Player.saveprofile(newplayer)
+            self.closeframe()
+            self.scoreboard()
 
     # Scoreboard Page
     def scoreboard(self, previouspage):
         scoreboardwindow = Tk()
         print("Scoreboard initiate")
+        Label(self.frame, text = "Scoreboard").grid(row = 0, column = 1)
+        f = open("savedplayers.txt", "r")
+        contents = (f.read())
+        Label(self.frame, text = contents).grid(row = 0, column = 1)
+        f.close()
 
 # Initialize class and Tkinter root window
 App()
+root.resizable(False, False)
 root.mainloop()

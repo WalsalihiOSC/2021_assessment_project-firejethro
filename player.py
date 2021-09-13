@@ -10,4 +10,11 @@ class Player:
     # Display Name and High Score
     def displayprofile(self):
         percentage = self.savecorrectresponses / self.savequestionindex * 100
-        print("Name: {} | {:.2f}% Correct | {} Questions".format(self.savename, percentage, self.savequestionindex))
+        self.newplayertext = "Name: {} | {:.2f}% Correct | {} Questions\n".format(self.savename, percentage, self.savequestionindex)
+        print(self.newplayertext)
+
+    # Records
+    def saveprofile(self):
+        savedplayers = open('savedplayers.txt', 'a')
+        savedplayers.write(self.newplayertext)
+        savedplayers.close()
