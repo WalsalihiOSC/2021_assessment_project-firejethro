@@ -1,8 +1,6 @@
 import random
-from PIL import Image, ImageTk
 from player import *
 from tkinter import *
-
 
 root = Tk()
 root.title("Math Game")
@@ -15,6 +13,11 @@ gray = '#414141'
 green = '#1DD600'
 blue = '#4285F4'
 
+# Dim Shades
+dimred = '#B52E2E'
+dimblue = '#48629C'
+dimwhite = '#A3A3A3'
+
 # Page Functions
 class App:
 
@@ -23,9 +26,14 @@ class App:
         self.frame = Frame(root)
         self.frame.place(width = 840, height = 480, relx = 0.5, rely = 0.5, anchor = CENTER)
 
+    # Correct/Incorrect miniframe
     def createminiframe(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext):
 
-        # Correct/Incorrect miniframe
+        # Dim background
+        self.title.config(fg = dimwhite, bg = dimblue)
+        self.frame.config(bg = dimwhite)
+
+        # Create and place miniframe
         self.miniframe = Frame(root, highlightbackground = bgcolor, highlightthickness = 10)
         self.miniframe.place(width = 360, height = 265, relx = 0.5, rely = 0.5, anchor = CENTER)
 
@@ -46,7 +54,7 @@ class App:
         self.frame.destroy()
 
     # Title Label function
-    def titlelabel(self, titletext):
+    def createtitlelabel(self, titletext):
         self.title = Label(self.frame, text = titletext, font = ('Comic Sans MS', 50), fg = white, bg = blue)
         self.title.place(width = 840, relx = 0.5, rely = 0, anchor = N)
 
@@ -55,7 +63,7 @@ class App:
         self.createnewframe()
 
         # Creating and placing Labels
-        self.titlelabel("Math Game")
+        self.createtitlelabel("Math Game")
         
         namelabel = Label(self.frame, text = "Name:", font = ('Comic Sans MS', 30), fg = gray)
         namelabel.place(relx = 0.25, rely = 0.5, anchor = CENTER)
@@ -70,7 +78,6 @@ class App:
     def verify(self):
         self.name = self.nameentry.get()
         
-        
         # If response field is EMPTY
         if self.name == "":
 
@@ -83,7 +90,7 @@ class App:
             self.closeframe()
             self.difficulty()
 
-# Difficulty Page
+    # Difficulty Page
     def difficulty(self):
         
         # Create new frame
@@ -97,7 +104,7 @@ class App:
         self.difficultylabels2 = ["", "x / ÷ : Up to 12" ,"x / ÷ : Up to 100"]
 
         # Creating and placing Labels
-        self.titlelabel("Select Difficulty")
+        self.createtitlelabel("Select Difficulty")
 
         clicktochange = Label(self.frame, text = "Click to Change", font = ('Comic Sans MS', 20), fg = gray)
         clicktochange.place(relx = 0.5, rely = 0.325, anchor = CENTER)
@@ -186,9 +193,8 @@ class App:
         # Create new frame
         self.createnewframe()
 
-        # Generate equation
-        # Generate sign
-        # Random integer, 0 = Addition, 1 = Subtraction, 2 = Multiplication, 4 = Division
+        # Generate equation and sign
+        # Sign index, 0 = Addition, 1 = Subtraction, 2 = Multiplication, 4 = Division
         signindex = random.randint(0, self.signmax)
 
         # If Addition/Subtraction
@@ -218,12 +224,12 @@ class App:
 
         # Create equation strings
         self.equation = F"{numberone} {sign} {numbertwo}"
-        self.questionindexlabel = F"Question {self.questionindex} of 10"
+        self.questionindextext = F"Question {self.questionindex} of 10"
         
         # Gameplay Displayed Page Setup
-        self.titlelabel(self.questionindexlabel)
-        equationlabel = Label(self.frame, text = self.equation, font = ("Arial", 40))
-        equationlabel.place(relx = 0.5, rely = 0.4, anchor = CENTER)
+        self.questionindexlabel = self.createtitlelabel(self.questionindextext)
+        self.equationlabel = Label(self.frame, text = self.equation, font = ("Arial", 40))
+        self.equationlabel.place(relx = 0.5, rely = 0.4, anchor = CENTER)
 
         self.responseentry = Entry(self.frame, font = ('Comic Sans MS', 30))
         self.responseentry.place(width = 260, height = 80, relx = 0.5, rely = 0.55, anchor = CENTER)
@@ -257,9 +263,9 @@ class App:
             else:
                 self.errorlabel.config(text = F"{self.response} is not a valid number.")
 
+    # If response IS a valid integer
     def markresponse(self):
-        # If response IS a valid integer
-
+        
         # Create and place label based on if answer correct or incorrect
         self.submitbutton.config(state = DISABLED, bg = gray)
 
@@ -274,39 +280,38 @@ class App:
         self.closeframe()
 
         # If below question limit
-        if self.questionindex < 10:
+        if self.questionindex < 0:
             self.generatequestion()
 
         # If question limit reached
         else:
             self.closeframe()
+            self.gameover()
 
             # Create newplayer object in Player class
             newplayer = Player(self.name, self.correctresponses, self.questionindex)
 
-            # Create new frame
-            self.createnewframe()
-
-            # Game over and final score labels
-            Label(self.frame, text = "Game Over").grid(row = 0, column = 1)
-            finalscorelabel = F"{self.correctresponses} of {self.questionindex} correct"
-            Label(self.frame, text = finalscorelabel).grid(row = 0, column = 1)
-
             # Instance of player
             Player.displayprofile(newplayer)
             Player.saveprofile(newplayer)
-            self.closeframe()
-            self.scoreboard()
 
-    # Scoreboard Page
-    def scoreboard(self, previouspage):
-        scoreboardwindow = Tk()
-        print("Scoreboard initiate")
-        Label(self.frame, text = "Scoreboard").grid(row = 0, column = 1)
-        f = open("savedplayers.txt", "r")
-        contents = (f.read())
-        Label(self.frame, text = contents).grid(row = 0, column = 1)
-        f.close()
+    def gameover(self):
+        self.createnewframe()
+
+        self.createtitlelabel("Game Over")
+        scoretextlabel = Label(self.frame, text = "You got             correct", font = ('Comic Sans MS', 40), fg = gray)
+        scoretextlabel.place(relx = 0.495, rely = 0.5, anchor = CENTER)
+        scorelabel = Label(self.frame, text = F"{self.correctresponses} / 10 ", font = ('Comic Sans MS', 40), fg = blue)
+        scorelabel.place(x = 520, y = 240, anchor = E)
+
+        replaybutton = Button(self.frame, text = "Replay", command = self.difficulty, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        replaybutton.place(width = 180, height = 80, relx = 0.15, rely = 0.85, anchor = CENTER)
+
+        nextbutton = Button(self.frame, text = "Continue", command = self.scoreboard, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        nextbutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
+
+    def scoreboard(self):
+        print("Scoreboard")
 
 # Initialize class and Tkinter root window
 App()
