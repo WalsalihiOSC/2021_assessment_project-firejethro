@@ -112,10 +112,11 @@ class App:
             numbertwo = random.randint(1, self.muldivmax)
             if signindex == 1:
                 sign = "×"
-                self.answer = numberone + numbertwo
+                self.answer = numberone * numbertwo
             else:
                 sign = "÷"
-                self.answer = numberone - numbertwo
+                product = numberone * numbertwo
+                self.answer = product / numberone
 
         # Create equation strings
         self.equation = F"{numberone} {sign} {numbertwo}"
@@ -128,10 +129,24 @@ class App:
         self.response.grid(row = 3, column = 1)
         Button(self.frame, text = "Submit", command = self.submit).grid(row = 3, column = 2)
 
-    # Record name as variable and switch frame
+    # Record response as variable and switch frame
     def submit(self):
         self.response = self.response.get()
         print(self.response)
+
+    # Valid Integer Check function
+    def numcheck(self, numtype, question, low, high, errormsg, valuemsg):
+        while True:
+            try:
+                response = int(self.response)
+                if low <= response and response <= high:
+                    return response
+                else:
+                    print(errormsg)
+            except ValueError:
+                print(valuemsg)
+
+    # Check if answer is correct 
         
 # Scoreboard Page
 
