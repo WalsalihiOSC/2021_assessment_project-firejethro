@@ -115,10 +115,10 @@ class App:
             numbertwo = random.randint(1, self.addsubmax)
             if signindex == 1:
                 sign = "+"
-                self.answer = numberone + numbertwo
+                self.answer = float(numberone + numbertwo)
             else:
                 sign = "-"
-                self.answer = numberone - numbertwo
+                self.answer = float(numberone - numbertwo)
         
         # If Multiplication/Division
         else:
@@ -126,13 +126,13 @@ class App:
             numbertwo = random.randint(1, self.muldivmax)
             if signindex == 3:
                 sign = "×"
-                self.answer = numberone * numbertwo
+                self.answer = float(numberone * numbertwo)
             else:
                 sign = "÷"
 
                 # Logic to make sure answer is a whole number
                 numberone = numberone * numbertwo
-                self.answer = numberone / numbertwo
+                self.answer = float(numberone / numbertwo)
 
         # Create equation strings
         self.equation = F"{numberone} {sign} {numbertwo}"
@@ -153,7 +153,7 @@ class App:
         self.response = self.response.replace(" ", "")
 
         try:
-            self.response = int(self.responseentry.get())
+            self.response = float(self.responseentry.get())
             self.markresponse()
             
         # If response is NOT a valid integer
@@ -167,9 +167,16 @@ class App:
                 errorwindow.destroy()
 
             # Create and place labels and button
-            invalidresponselabel = F"{self.response} is not a valid number."
-            Label(errorwindow, text = invalidresponselabel).grid(row = 0, column = 1)
-            Button(errorwindow, text = "Retry", command = closewindow).grid(row = 1, column = 1)
+
+            # If response field is EMPTY
+            if self.response is None:
+                invalidresponselabel = F"Enter a number into the answer field."
+
+            # If invalid response entered
+            else:
+                invalidresponselabel = F"{self.response} is not a valid number."
+                Label(errorwindow, text = invalidresponselabel).grid(row = 0, column = 1)
+                Button(errorwindow, text = "Retry", command = closewindow).grid(row = 1, column = 1)
 
             # Initialize Tkinter error window
             errorwindow.mainloop
