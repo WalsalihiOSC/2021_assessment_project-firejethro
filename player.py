@@ -12,7 +12,7 @@ class Player:
     def saveProfile(self):
         
         # Format profile
-        self.saveprofiletext = F"{self.savename},{self.savecorrect}0%,{self.savedifficulty},{self.saveage}\n"
+        self.saveprofiletext = F"{self.savename},{self.savecorrect},{self.savedifficulty},{self.saveage}\n"
 
         # Save profile into text file
         self.savedprofiles = open('savedprofiles.txt', 'a')

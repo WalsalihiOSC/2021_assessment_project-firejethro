@@ -165,7 +165,7 @@ class Game:
         
         # If Multiplication/Division
         else:
-            self.numberone = random.randint(0, self.muldivmax)
+            self.numberone = random.randint(1, self.muldivmax)
             self.numbertwo = random.randint(0, self.muldivmax)
             if signindex == 3:
                 self.sign = "×"
@@ -237,6 +237,9 @@ class Game:
 
         # Open savedprofiles.txt file
         self.savedprofiles = open('savedprofiles.txt', 'a')
+
+        # Format correct before saving
+        self.correct = "{:02d}".format(self.correct)
 
         # Create saveplayer object in Player class
         saveplayer = Player(self.name, self.correct, self.difficulties[self.difficultyindex], self.age_intnospace)
@@ -423,7 +426,7 @@ class Game:
 
             # Define labels
             col0 = Label(scoretable, text = self.profiles[index].savename, width = 0, font = (fontA, 16), bg = alternating)
-            col1 = Label(scoretable, text = self.profiles[index].savecorrect, font = (fontA, 16), bg = alternating)
+            col1 = Label(scoretable, text = F"{self.profiles[index].savecorrect}0%".strip("0"), font = (fontA, 16), bg = alternating)
             col2 = Label(scoretable, text = self.profiles[index].savedifficulty, font = (fontA, 16), bg = alternating)
 
             # Place labels
