@@ -1,4 +1,5 @@
 import random
+from player import *
 from tkinter import *
 
 root = Tk()
@@ -8,14 +9,18 @@ root.geometry("400x300")
 # Page Functions
 class App:
 
+    # Create new frame function
+    def createnewframe(self):
+        self.frame = Frame(root)
+        self.frame.grid()
+
     # Close Frame Function
     def closeframe(self):
         self.frame.destroy()
-    
+
     # Contructor + Name Page
     def __init__(self):
-        self.frame = Frame(root)
-        self.frame.grid()
+        self.createnewframe()
 
         # Creating and placing Labels
         title = Label(self.frame, text = "Math Game").grid(row = 0, column = 1, pady = 20)
@@ -26,17 +31,37 @@ class App:
 
     # Record name as variable and switch frame
     def verify(self):
-        name = self.nameentry.get()
-        self.closeframe()
-        self.difficulty()
+        self.name = self.nameentry.get()
+        
+        
+        # If response field is EMPTY
+        if self.name == "":
 
+            # Create error window
+            errorwindow = Tk()
+
+            # Close error window function
+            def closewindow():
+                errorwindow.destroy()
+            invalidresponselabel = F"Enter your name into the answer field."
+            Label(errorwindow, text = invalidresponselabel).grid(row = 0, column = 1)
+            Button(errorwindow, text = "Retry", command = closewindow).grid(row = 1, column = 1)
+
+            # Initialize Tkinter error window
+            errorwindow.mainloop
+
+            print("Invalid")
+
+        # If name entered
+        else:
+            self.closeframe()
+            self.difficulty()
 
 # Difficulty Page
     def difficulty(self):
         
         # Create new frame
-        self.frame = Frame(root)
-        self.frame.grid()
+        self.createnewframe()
 
         # Setting starting variables for Change Difficulty Function Loop
         self.difficultyindex = 0
@@ -63,13 +88,15 @@ class App:
         difficulty = self.difficulties[self.difficultyindex]
         self.difficultybutton.config(text = difficulty)
     
+    # Start Game Function
     def play(self):
 
         # Close frame
         self.closeframe()
 
         # Set variables
-        self.questionindex = 1
+        self.questionindex = 0
+        print(F"Question Index set to {self.questionindex}")
         self.correctresponses = 0
 
         # Set ranges based on difficulty
@@ -100,9 +127,12 @@ class App:
 # Generate question
     def generatequestion(self):
         
+        # Add to question index
+        self.questionindex += 1
+        print(F"Question Index changed to {self.questionindex}")
+        
         # Create new frame
-        self.frame = Frame(root)
-        self.frame.grid()
+        self.createnewframe()
 
         # Generate equation
         # Generate sign
@@ -136,10 +166,10 @@ class App:
 
         # Create equation strings
         self.equation = F"{numberone} {sign} {numbertwo}"
-        self.questionnumberlabel = F"Question {self.questionindex} of 10"
+        self.questionindexlabel = F"Question {self.questionindex} of 10"
         
         # Gameplay Displayed Page Setup
-        Label(self.frame, text = self.questionnumberlabel).grid(row = 0, column = 1, pady = 20)
+        Label(self.frame, text = self.questionindexlabel).grid(row = 0, column = 1, pady = 20)
         Label(self.frame, text = self.equation, font = ("Arial", 50)).grid(row = 2, column = 1)
         self.responseentry = Entry(self.frame)
         self.responseentry.grid(row = 3, column = 1)
@@ -169,14 +199,14 @@ class App:
             # Create and place labels and button
 
             # If response field is EMPTY
-            if self.response is None:
+            if self.response == "":
                 invalidresponselabel = F"Enter a number into the answer field."
 
             # If invalid response entered
             else:
                 invalidresponselabel = F"{self.response} is not a valid number."
-                Label(errorwindow, text = invalidresponselabel).grid(row = 0, column = 1)
-                Button(errorwindow, text = "Retry", command = closewindow).grid(row = 1, column = 1)
+            Label(errorwindow, text = invalidresponselabel).grid(row = 0, column = 1)
+            Button(errorwindow, text = "Retry", command = closewindow).grid(row = 1, column = 1)
 
             # Initialize Tkinter error window
             errorwindow.mainloop
@@ -189,8 +219,7 @@ class App:
 
         # Close frame, create Correct/Incorrect frame
         self.closeframe()
-        self.frame = Frame(root)
-        self.frame.grid()
+        self.createnewframe()
 
         # Create and place label based on if answer correct or incorrect
         if self.response == self.answer:
@@ -199,10 +228,7 @@ class App:
             self.correctresponses += 1
         else:
             print("Incorrect")
-            Label(self.frame, text = "Incorrect").grid(row = 1, column = 1)
-
-        # Add to question index
-        self.questionindex += 1        
+            Label(self.frame, text = "Incorrect").grid(row = 1, column = 1)       
 
         # Place current score label
         currentscorelabel = F"{self.correctresponses} of {self.questionindex}"
@@ -211,21 +237,33 @@ class App:
         
     def nextquestion(self):
         self.closeframe()
-        if self.questionindex <= 10:
+
+        # If below question limit
+        if self.questionindex < 1:
             self.generatequestion()
+
+        # If question limit reached
         else:
             self.closeframe()
-            print("Round Complete")
 
-# Scoreboard Page
+            # Create newplayer object in Player class
+            newplayer = Player(self.name, self.correctresponses, self.questionindex)
 
-'''
-# Data Encapsulation Class
-class Player:
-    def __init__(self, name, highscore):
-        name = self.name
-        highscore = self.highscore
-'''
+            # Create new frame
+            self.createnewframe()
+
+            # Game over and final score labels
+            Label(self.frame, text = "Game Over").grid(row = 0, column = 1)
+            finalscorelabel = F"{self.correctresponses} of {self.questionindex} correct"
+            Label(self.frame, text = finalscorelabel).grid(row = 0, column = 1)
+
+            # Instance of player
+            Player.displayprofile(newplayer)
+
+    # Scoreboard Page
+    def scoreboard(self, previouspage):
+        scoreboardwindow = Tk()
+        print("Scoreboard initiate")
 
 # Initialize class and Tkinter root window
 App()
