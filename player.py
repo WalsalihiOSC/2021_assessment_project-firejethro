@@ -2,19 +2,19 @@
 class Player:
 
     # Constructor
-    def __init__(self, n, c, qi):
-        self.savename = n
-        self.savecorrectresponses = c
-        self.savequestionindex = qi
+    def __init__(self, name, correct, difficulty):
+        self.savename = name
+        self.savecorrect = correct
+        self.difficulty = difficulty
 
     # Display Name and High Score
-    def displayprofile(self):
-        percentage = self.savecorrectresponses / self.savequestionindex * 100
-        self.newplayertext = "Name: {} | {:.2f}% Correct | {} Questions\n".format(self.savename, percentage, self.savequestionindex)
-        print(self.newplayertext)
-
-    # Records
     def saveprofile(self):
-        savedplayers = open('savedplayers.txt', 'a')
-        savedplayers.write(self.newplayertext)
-        savedplayers.close()
+        
+        # Format profile
+        self.saveprofiletext = F"{self.savename},{self.savecorrect}0%,{self.difficulty}\n"
+
+        # Save profile into text file
+        self.savedprofiles = open('savedprofiles.txt', 'a')
+        self.savedprofiles.write(self.saveprofiletext)
+        self.savedprofiles.close()
+        print(self.saveprofiletext)

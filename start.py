@@ -12,13 +12,15 @@ red = '#FF0000'
 gray = '#414141'
 green = '#1DD600'
 blue = '#4285F4'
+paleblue = '#C9DAF8'
 
 # Dim Shades
 dimred = '#B52E2E'
 dimblue = '#48629C'
 dimwhite = '#A3A3A3'
 
-class App:
+class Game:
+
     # Switch page function
     def switchpage(self, targetpage):
         self.frame.destroy()
@@ -39,7 +41,7 @@ class App:
 
         # If name entered
         else:
-            self.switchpage(self.difficulty)
+            self.switchpage(self.difficultypage)
 
     # Title Label function
     def createtitlelabel(self, titletext):
@@ -72,7 +74,7 @@ class App:
         # Set variables
         self.questionindex = 0
         print(F"Question Index set to {self.questionindex}")
-        self.correctresponses = 0
+        self.correct = 0
 
         # Set ranges based on difficulty
         addsubmin = 0
@@ -166,11 +168,12 @@ class App:
         self.submitbutton.config(state = DISABLED, bg = gray)
 
         if self.response == self.answer:
-            self.correctresponses += 1
-            self.createminiframe("Correct", green, "", F"{self.correctresponses} for {self.questionindex}")
+            self.correct += 1
+            self.createminiframe("Correct", green, "", F"{self.correct} for {self.questionindex}", 30, 0.45)
             
         else:
-            self.createminiframe("Incorrect", red, F"{self.equation} = {self.answer}", F"{self.correctresponses} for {self.questionindex}")
+            self.createminiframe("Incorrect", red, "{} = {:,g}".format(self.equation, self.answer), F"{self.correct} for {self.questionindex}", 20, 0.5)
+    
     def nextquestion(self):
 
         # If below question limit
@@ -179,14 +182,33 @@ class App:
 
         # If question limit reached
         else:
-            self.switchpage(self.gameover)
+            self.switchpage(self.gameoverpage)
 
-            # Create newplayer object in Player class
-            newplayer = Player(self.name, self.correctresponses, self.questionindex)
 
-            # Instance of player
-            Player.displayprofile(newplayer)
-            Player.saveprofile(newplayer)
+    # Read and save profile   
+    def storeprofiles(self):
+
+        # Create saveplayer object in Player class
+        saveplayer = Player(self.name, self.correct, self.difficulties[self.difficultyindex])
+
+        # Log instance of player
+        Player.saveprofile(saveplayer)
+
+        # Read .txt file and compile list of profile objects 
+        self.profiles = []
+        self.savedprofiles = open('savedprofiles.txt').readlines()
+
+        for line in self.savedprofiles:
+            row = line.split(',')
+            name, correct, difficulty = [i.strip() for i in row]
+            profile = Player(name, correct, difficulty)
+            self.profiles = self.profiles + [profile]
+
+        # Sort by highest to lowest correct answers
+        self.profiles.sort(key=lambda x: x.savecorrect, reverse=True)
+
+        # Truncate list to top 5 scorers
+        self.profiles = self.profiles[:5]
 
     # Page Functions
     def __init__(self):
@@ -206,7 +228,7 @@ class App:
         # Defining label, entry and button
         namelabel = Label(self.frame, text = "Name:", font = ('Comic Sans MS', 30), fg = gray)
         self.nameentry = Entry(self.frame, font = ('Comic Sans MS', 30))
-        nextbutton = Button(self.frame, text = "Next", command = self.verify, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        nextbutton = Button(self.frame, text = "Next", command = self.verify, font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
 
         # Enter previously entered name on repeat visits
         self.nameentry.insert(0, self.name)
@@ -217,7 +239,7 @@ class App:
         nextbutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
 
     # Difficulty Page
-    def difficulty(self):
+    def difficultypage(self):
 
         # Create and place title widget
         self.createtitlelabel("Select Difficulty")
@@ -234,8 +256,8 @@ class App:
         self.difficultybutton = Button(self.frame, text = "Easy", command = self.changedifficulty, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
         self.difficultylabel1 = Label(self.frame, text = "+ / - : Up to 100", font = ('Comic Sans MS', 24), fg = gray)
         self.difficultylabel2 = Label(self.frame, text = "", font = ('Comic Sans MS', 24), fg = gray)
-        startbutton = Button(self.frame, text = "Start", command = self.initializegame, font = ('Comic Sans MS', 30), fg = white, bg = green, borderwidth = 12)
-        backbutton = Button(self.frame, text = "Back", command = lambda: self.switchpage(self.namepage), font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        startbutton = Button(self.frame, text = "Start", command = self.initializegame, font = ('Comic Sans MS', 25), fg = white, bg = green, borderwidth = 12)
+        backbutton = Button(self.frame, text = "Back", command = lambda: self.switchpage(self.namepage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
         
         # Place widgets
         clicktochange.place(relx = 0.5, rely = 0.325, anchor = CENTER)
@@ -264,48 +286,118 @@ class App:
         self.errorlabel.place(relx = 0.5, rely = 0.7, anchor = CENTER)
 
     # Correct/Incorrect miniframe
-    def createminiframe(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext):
+    def createminiframe(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext, currentscoresize, currentscoreheight):
 
         # Dim background
         self.title.config(fg = dimwhite, bg = dimblue)
         self.frame.config(bg = dimwhite)
 
         # Define widgets
-        self.miniframe = Frame(root, highlightbackground = bgcolor, highlightthickness = 10)
+        self.miniframe = Frame(self.frame, highlightbackground = bgcolor, highlightthickness = 10)
         miniframetitle = Label(self.miniframe, text = miniframetitletext, font = ('Comic Sans MS', 40), fg = white, bg = bgcolor)
         correctanswer = Label(self.miniframe, text = correctanswertext, font = ('Comic Sans MS', 20), fg = gray)
-        currentscore = Label(self.miniframe, text = currentscoretext, font = ('Comic Sans MS', 20), fg = gray)
-        nextbutton = Button(self.miniframe, text = "Next", command = self.nextquestion, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
+        currentscore = Label(self.miniframe, text = currentscoretext, font = ('Comic Sans MS', currentscoresize), fg = gray)
+        nextbutton = Button(self.miniframe, text = "Next", command = self.nextquestion, font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
         
         # Place widgets
         self.miniframe.place(width = 360, height = 265, relx = 0.5, rely = 0.5, anchor = CENTER)
         miniframetitle.place(width = 360, height = 60, relx = 0.5, rely = 0, anchor = N)
         correctanswer.place(relx = 0.5, rely = 0.35, anchor = CENTER)
-        currentscore.place(relx = 0.5, rely = 0.5, anchor = CENTER)
+        currentscore.place(relx = 0.5, rely = currentscoreheight, anchor = CENTER)
         nextbutton.place(width = 180, height = 80, relx = 0.5, rely = 0.8, anchor = CENTER)
 
     # Game Over Page
-    def gameover(self):
+    def gameoverpage(self):
 
         # Create and place title label
         self.createtitlelabel("Game Over")
 
         # Define widgets
         scoretextlabel = Label(self.frame, text = "You got             correct", font = ('Comic Sans MS', 40), fg = gray)
-        scorelabel = Label(self.frame, text = F"{self.correctresponses} / 10 ", font = ('Comic Sans MS', 40), fg = blue)
-        replaybutton = Button(self.frame, text = "Replay", command = self.difficulty, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
-        nextbutton = Button(self.frame, text = "Continue", command = self.scoreboard, font = ('Comic Sans MS', 30), fg = white, bg = blue, borderwidth = 12)
-        
+        scorelabel = Label(self.frame, text = F"{self.correct} / 10 ", font = ('Comic Sans MS', 40), fg = blue)
+        replaybutton = Button(self.frame, text = "Replay", command = lambda: self.switchpage(self.difficultypage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+        continuebutton = Button(self.frame, text = "Continue", command = lambda: self.switchpage(self.scoreboardpage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+
         # Place widgets
         scoretextlabel.place(relx = 0.495, rely = 0.5, anchor = CENTER)
         scorelabel.place(x = 520, y = 240, anchor = E)
         replaybutton.place(width = 180, height = 80, relx = 0.15, rely = 0.85, anchor = CENTER)
-        nextbutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
+        continuebutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
 
-    def scoreboard(self):
-        print("Scoreboard")
+        # Initialize profile storing
+        self.storeprofiles()
+    
+    # New Player
+    def newplayer(self):
+        self.name = ""
+        self.switchpage(self.namepage)
+
+    # Scoreboard Page
+    def scoreboardpage(self):
+
+        # Create title label
+        self.createtitlelabel("Scoreboard")
+
+        # Defining table
+        scoretable = Frame(self.frame, bg = red)
+
+        # Define rows
+        row0 = Frame(scoretable, width = 840, height = 40, bg = dimblue)
+        row1 = Frame(scoretable, width = 840, height = 40, bg = paleblue)
+        row2 = Frame(scoretable, width = 840, height = 40, bg = white)
+        row3 = Frame(scoretable, width = 840, height = 40, bg = paleblue)
+        row4 = Frame(scoretable, width = 840, height = 40, bg = white)
+        row5 = Frame(scoretable, width = 840, height = 40, bg = paleblue)
+
+        # Define top row labels
+        scoretablename = Label(scoretable, text = "Name", font = ('Comic Sans MS', 16), fg = white, bg = dimblue)
+        scoretablepct = Label(scoretable, text = "Correct", font = ('Comic Sans MS', 16), fg = white, bg = dimblue)
+        scoretabledifficulty = Label(scoretable, text = "Difficulty", font = ('Comic Sans MS', 16), fg = white, bg = dimblue)
+        gridy = 40
+
+        for index, value in enumerate(self.profiles):
+            
+            # To make rows alternative color
+            if gridy == 80 or gridy == 160:
+                alternating = white
+            else:
+                alternating = paleblue
+
+            # Define labels
+            col0 = Label(scoretable, text = self.profiles[index].savename, width = 0, font = ('Comic Sans MS', 16), bg = alternating)
+            col1 = Label(scoretable, text = self.profiles[index].savecorrect, font = ('Comic Sans MS', 16), bg = alternating)
+            col2 = Label(scoretable, text = self.profiles[index].difficulty, font = ('Comic Sans MS', 16), bg = alternating)
+
+            # Place labels
+            col0.place(x = 0, y = gridy, anchor = NW)
+            col1.place(x = 280, y = gridy, anchor = NW)
+            col2.place(x = 560, y = gridy, anchor = NW)
+            
+            gridy += 40
+
+        # Defining widgets
+        replaybutton = Button(self.frame, text = "Replay", command = lambda: self.switchpage(self.difficultypage), font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+        newplayerbutton = Button(self.frame, text = "New Player", command = self.newplayer, font = ('Comic Sans MS', 25), fg = white, bg = blue, borderwidth = 12)
+
+        # Place scoreboard rows
+        row0.place(x = 0, y = 0, anchor = NW)
+        row1.place(x = 0, y = 40, anchor = NW)
+        row2.place(x = 0, y = 80, anchor = NW)
+        row3.place(x = 0, y = 120, anchor = NW)
+        row4.place(x = 0, y = 160, anchor = NW)
+        row5.place(x = 0, y = 200, anchor = NW)
+
+        # Place scoreboard title words
+        scoretable.place(relx = 0.5, rely = 0.45, width = 840, height = 240, anchor = CENTER)
+        scoretablename.place(x = 0, y = 0, anchor = NW)
+        scoretablepct.place(x = 280, y = 0, anchor = NW)
+        scoretabledifficulty.place(x = 560, y = 0, anchor = NW)
+
+        # Place button widgets
+        replaybutton.place(width = 180, height = 80, relx = 0.15, rely = 0.85, anchor = CENTER)
+        newplayerbutton.place(width = 240, height = 80, relx = 0.80, rely = 0.85, anchor = CENTER)
 
 # Initialize program and Tkinter root window
-App()
+Game()
 root.resizable(False, False)
 root.mainloop()
