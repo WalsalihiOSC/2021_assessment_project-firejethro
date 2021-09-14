@@ -7,13 +7,17 @@ root.title("Math Game")
 root.geometry("840x480")
 
 # Color Palette
+defaultgray = '#F0F0F0'
 white = '#FFFFFF'
 red = '#FF0000'
 gray = '#414141'
 green = '#1DD600'
 blue = '#4285F4'
 paleblue = '#C9DAF8'
-dimred = '#B52E2E'
+#dimred = '#AB2C2C'
+dimred = '#282A35'
+#dimgreen = '#2CAB2C'
+dimgreen = '#282A35'
 dimblue = '#48629C'
 dimwhite = '#A3A3A3'
 
@@ -95,7 +99,7 @@ class Game:
             self.difficultyindex += 1
         else:
             self.difficultyindex = 0
-        print(F"Index Changed to {self.difficultyindex}")
+        print(F"changeDifficulty: Difficulty Index Changed to {self.difficultyindex}")
 
         # Change difficulty button text 
         difficulty = self.difficulties[self.difficultyindex]
@@ -112,9 +116,40 @@ class Game:
     def initializeGame(self):
 
         # Set variables
-        self.questionindex = 0
+        self.questionindex = 1
         print(F"Question Index set to {self.questionindex}")
         self.correct = 0
+
+        # Create progress bar frame
+        self.barframe = Frame(root)
+        self.barframe.place(width = 840, height = 20, x = 420, y = 120, anchor = CENTER)
+        
+        # Define bar widgets (Placement in initializeGame ensures new set of bars are not created each question)
+        self.bar1 = Label(self.barframe, text = "", bg = gray)
+        self.bar2 = Label(self.barframe, text = "", bg = gray)
+        self.bar3 = Label(self.barframe, text = "", bg = gray)
+        self.bar4 = Label(self.barframe, text = "", bg = gray)
+        self.bar5 = Label(self.barframe, text = "", bg = gray)
+        self.bar6 = Label(self.barframe, text = "", bg = gray)
+        self.bar7 = Label(self.barframe, text = "", bg = gray)
+        self.bar8 = Label(self.barframe, text = "", bg = gray)
+        self.bar9 = Label(self.barframe, text = "", bg = gray)
+        self.bar10 = Label(self.barframe, text = "", bg = gray)
+
+        # Place progress bars
+        self.bar1.place(height = 20, width = 70, x =  + 40, y = 0, anchor = N)
+        self.bar2.place(height = 20, width = 70, x = 84 + 40, y = 0, anchor = N)
+        self.bar3.place(height = 20, width = 70, x = 84 * 2 + 40, y = 0, anchor = N)
+        self.bar4.place(height = 20, width = 70, x = 84 * 3 + 40, y = 0, anchor = N)
+        self.bar5.place(height = 20, width = 70, x = 84 * 4 + 40, y = 0, anchor = N)
+        self.bar6.place(height = 20, width = 70, x = 84 * 5 + 40, y = 0, anchor = N)
+        self.bar7.place(height = 20, width = 70, x = 84 * 6 + 40, y = 0, anchor = N)
+        self.bar8.place(height = 20, width = 70, x = 84 * 7 + 40, y = 0, anchor = N)
+        self.bar9.place(height = 20, width = 70, x = 84 * 8 + 40, y = 0, anchor = N)
+        self.bar10.place(height = 20, width = 70, x = 84 * 9 + 40, y = 0, anchor = N)
+
+        # Create list for bars
+        self.bars = [self.bar1, self.bar2, self.bar3, self.bar4, self.bar5, self.bar6, self.bar7, self.bar8, self.bar9, self.bar10]
 
         # Generate first question
         self.generateQuestion()
@@ -123,10 +158,6 @@ class Game:
     def generateQuestion(self):
 
         # Set ranges based on difficulty
-        addsubmin = 0
-        muldivmin = 0
-        signmin = 0
-
         # Easy
         if self.difficultyindex == 0:
             self.addsubmax = 100
@@ -143,10 +174,6 @@ class Game:
             self.addsubmax = 1000
             self.muldivmax = 100
             self.signmax = 3
-
-        # Add to question index
-        self.questionindex += 1
-        print(F"Question Index changed to {self.questionindex}")
 
         # Generate equation and sign
         # Sign index, 0 = Addition, 1 = Subtraction, 2 = Multiplication, 4 = Division
@@ -177,10 +204,8 @@ class Game:
                 self.numberone = self.numberone * self.numbertwo
                 self.answer = float(self.numberone / self.numbertwo)
 
-        # Print answer
-        print("generateQuestion", self.answer)
-
         # Initiate question page
+        print(F"generateQuestion: {self.answer}")
         self.switchPage(self.questionPage)
 
     # Submit Response Function
@@ -214,23 +239,45 @@ class Game:
         # Create and place label based on if answer correct or incorrect
         self.submitbutton.config(state = DISABLED, bg = gray)
 
+        # Correct answer
         if self.response == self.answer:
             self.correct += 1
             self.resultPage("Correct", green, "", F"{self.correct} for {self.questionindex}", 30, 0.45)
-            
+            self.barcolor = green
+
+        # Incorrect answer
         else:
             self.resultPage("Incorrect", red, "{} = {:,g}".format(F"{self.numberone} {self.sign} {self.numbertwo}", self.answer), F"{self.correct} for {self.questionindex}", 20, 0.5)
-    
+            self.barcolor = red
+
     # Next Question Function
     def nextQuestion(self):
 
         # If below question limit
         if self.questionindex < 10:
-            self.generateQuestion()
+
+            # Undo dim barframe (Frame is not destroyed like questionPage and resultPage frames)
+            self.barframe.config(bg = defaultgray)
+
+            # Change bar color
+            self.changebar = self.bars[self.questionindex - 1]
+            self.changebar.config(bg = self.barcolor)
+
+            # Add to question index
+            self.questionindex += 1
+            print(F"nextQuestion: Question Index changed to {self.questionindex}")
+
+            # Generate another question
+            self.switchPage(self.generateQuestion)
 
         # If question limit reached
         else:
+
+            # Initialize Game Over Page Function
             self.switchPage(self.gameOverPage)
+
+            # Destroy barframe
+            self.barframe.destroy()
 
     # Store Profile Function  
     def storeProfiles(self):
@@ -307,7 +354,7 @@ class Game:
 
         # Setting starting variables for Change Difficulty Function Loop
         self.difficultyindex = 0
-        print(F"Index Set to 0")
+        print(F"difficultyPage: Difficulty Index Set to 0")
         self.difficulties = ["Easy", "Medium", "Hard"]
         self.difficultylabels1 = ["+ / - : Up to 100", "+ / - : Up to 100", "+ / - : Up to 1000"]
         self.difficultylabels2 = ["", "x / ÷ : Up to 12" ,"x / ÷ : Up to 100"]
@@ -346,15 +393,19 @@ class Game:
         self.submitbutton.place(width = 180, height = 80, relx = 0.5, rely = 0.85, anchor = CENTER)
         self.errorlabel.place(relx = 0.5, rely = 0.7, anchor = CENTER)
 
+        # Raise barframe over questionPage frame
+        self.barframe.tkraise()
+
     # Result Page
     def resultPage(self, miniframetitletext, bgcolor, correctanswertext, currentscoretext, currentscoresize, currentscoreheight):
 
-        # Dim background
+        # Dim questionPage frame and barframe colors
         self.title.config(fg = dimwhite, bg = dimblue)
         self.frame.config(bg = dimwhite)
+        self.barframe.config(bg = dimwhite)
 
         # Define widgets
-        self.miniframe = Frame(self.frame, highlightbackground = bgcolor, highlightthickness = 10)
+        self.miniframe = Frame(root, highlightbackground = bgcolor, highlightthickness = 10)
         miniframetitle = Label(self.miniframe, text = miniframetitletext, font = (fontA, 40), fg = white, bg = bgcolor)
         correctanswer = Label(self.miniframe, text = correctanswertext, font = (fontA, 20), fg = gray)
         currentscore = Label(self.miniframe, text = currentscoretext, font = (fontA, currentscoresize), fg = gray)
