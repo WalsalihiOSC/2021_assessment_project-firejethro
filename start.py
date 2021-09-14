@@ -15,9 +15,7 @@ green = '#1DD600'
 blue = '#4285F4'
 paleblue = '#C9DAF8'
 #dimred = '#AB2C2C'
-dimred = '#282A35'
 #dimgreen = '#2CAB2C'
-dimgreen = '#282A35'
 dimblue = '#48629C'
 dimwhite = '#A3A3A3'
 
@@ -125,16 +123,16 @@ class Game:
         self.barframe.place(width = 840, height = 20, x = 420, y = 120, anchor = CENTER)
         
         # Define bar widgets (Placement in initializeGame ensures new set of bars are not created each question)
-        self.bar1 = Label(self.barframe, text = "", bg = gray)
-        self.bar2 = Label(self.barframe, text = "", bg = gray)
-        self.bar3 = Label(self.barframe, text = "", bg = gray)
-        self.bar4 = Label(self.barframe, text = "", bg = gray)
-        self.bar5 = Label(self.barframe, text = "", bg = gray)
-        self.bar6 = Label(self.barframe, text = "", bg = gray)
-        self.bar7 = Label(self.barframe, text = "", bg = gray)
-        self.bar8 = Label(self.barframe, text = "", bg = gray)
-        self.bar9 = Label(self.barframe, text = "", bg = gray)
-        self.bar10 = Label(self.barframe, text = "", bg = gray)
+        self.bar1 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar2 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar3 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar4 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar5 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar6 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar7 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar8 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar9 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
+        self.bar10 = Label(self.barframe, text = "", fg = white, bg = gray, font = (fontA, 15))
 
         # Place progress bars
         self.bar1.place(height = 20, width = 70, x =  + 40, y = 0, anchor = N)
@@ -244,11 +242,13 @@ class Game:
             self.correct += 1
             self.resultPage("Correct", green, "", F"{self.correct} for {self.questionindex}", 30, 0.45)
             self.barcolor = green
+            self.bartext = "✔"
 
         # Incorrect answer
         else:
             self.resultPage("Incorrect", red, "{} = {:,g}".format(F"{self.numberone} {self.sign} {self.numbertwo}", self.answer), F"{self.correct} for {self.questionindex}", 20, 0.5)
             self.barcolor = red
+            self.bartext = "✖"
 
     # Next Question Function
     def nextQuestion(self):
@@ -261,7 +261,7 @@ class Game:
 
             # Change bar color
             self.changebar = self.bars[self.questionindex - 1]
-            self.changebar.config(bg = self.barcolor)
+            self.changebar.config(bg = self.barcolor, text = self.bartext)
 
             # Add to question index
             self.questionindex += 1
