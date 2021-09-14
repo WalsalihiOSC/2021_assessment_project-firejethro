@@ -315,7 +315,7 @@ class Game:
     def nextQuestion(self):
 
         # If below question limit
-        if self.questionindex < 1:
+        if self.questionindex < 10:
 
             # Undo dim barframe (Frame is not destroyed like questionPage and resultPage frames)
             self.barframe.config(bg = self.framebgcolor)
