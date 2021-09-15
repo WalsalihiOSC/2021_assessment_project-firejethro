@@ -71,9 +71,9 @@ class Game:
             self.dimsecondarycolor = dimsecondarycolor_light
             self.dimframebgcolor = dimframebgcolor_light
             self.darkmode = False
-            print("Light palette")
             self.switchPage(self.namePage)
-            self.switchpalettebutton.config(image = sun_icon)
+            self.switchpaletteicon = sun_icon
+            self.switchpalettebutton.config(image = self.switchpaletteicon)
         
         # Light Mode to Dark Mode
         else:
@@ -89,7 +89,8 @@ class Game:
             self.scoreboardcolorB = scoreboardcolorB_dark
             self.darkmode = True
             self.switchPage(self.namePage)
-            self.switchpalettebutton.config(image = moon_icon)
+            self.switchpaletteicon = moon_icon
+            self.switchpalettebutton.config(image = self.switchpaletteicon)
             print("Dark palette")
         
 
@@ -407,6 +408,7 @@ class Game:
         self.buttoncolor_disabled = buttoncolor_disabled_light
         self.scoreboardcolorA = scoreboardcolorA_light
         self.scoreboardcolorB = scoreboardcolorB_light
+        self.switchpaletteicon = sun_icon
 
         self.darkmode = False
 
@@ -424,7 +426,7 @@ class Game:
         self.createTitleLabel("Math Game")
         
         # Defining widgets
-        self.switchpalettebutton = Button(self.frame, image = sun_icon, command = self.switchPalette, font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
+        self.switchpalettebutton = Button(self.frame, image = self.switchpaletteicon, command = self.switchPalette, font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
         namelabel = Label(self.frame, text = "Name:", font = (fontA, 30), fg = self.textcolorB, bg = self.framebgcolor)
         self.nameentry = Entry(self.frame, font = (fontB, 30))
         self.nameerrorlabel = Label(self.frame, text = "", font = (fontA, 20), fg = self.red, bg = self.framebgcolor)
