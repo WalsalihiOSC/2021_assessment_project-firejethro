@@ -30,7 +30,8 @@ scoreboardcolorB_light = '#C9DAF8'
 textcolor_dark = '#FFFFFF'
 dimtextcolor_dark = '#A3A3A3'
 framebgcolor_dark = '#202020'
-secondarycolor_dark = '#4C5073'
+#secondarycolor_dark = '#4C5073'
+secondarycolor_dark = '#686085'
 dimsecondarycolor_dark = '#282B43'
 dimframebgcolor_dark = '#0E0E0E'
 scoreboardcolorA_dark = '#101010'
@@ -426,7 +427,7 @@ class Game:
         self.createTitleLabel("Math Game")
         
         # Defining widgets
-        self.switchpalettebutton = Button(self.frame, image = self.switchpaletteicon, command = self.switchPalette, font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
+        self.switchpalettebutton = Button(self.frame, image = self.switchpaletteicon, command = self.switchPalette, font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 8)
         namelabel = Label(self.frame, text = "Name:", font = (fontA, 30), fg = self.textcolorB, bg = self.framebgcolor)
         self.nameentry = Entry(self.frame, font = (fontB, 30))
         self.nameerrorlabel = Label(self.frame, text = "", font = (fontA, 20), fg = self.red, bg = self.framebgcolor)
@@ -439,7 +440,7 @@ class Game:
         self.nameentry.insert(0, self.name)
 
         # Place widgets
-        self.switchpalettebutton.place(width = 80, height = 80, relx = 0.1, rely = 0.85, anchor = CENTER)
+        self.switchpalettebutton.place(width = 72, height = 72, relx = 0.1, rely = 0.85, anchor = CENTER)
         namelabel.place(relx = 0.25, rely = 0.5, anchor = CENTER)
         self.nameentry.place(width = 260, height = 80, relx = 0.5, rely = 0.5, anchor = CENTER)
         self.nameerrorlabel.place(relx = 0.5, rely = 0.65, anchor = CENTER)
