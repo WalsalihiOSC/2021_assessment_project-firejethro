@@ -11,6 +11,7 @@ textcolorA_light = '#FFFFFF'
 textcolorB_light = '#414141'
 textcolorC_light = '#000000'
 dimtextcolorA_light = '#A3A3A3'
+
 defaultgray_light = '#F0F0F0'
 red_light = '#FF0000'
 green_light = '#1DD600'
@@ -35,8 +36,13 @@ dimframebgcolor_dark = '#0E0E0E'
 scoreboardcolorA_dark = '#101010'
 scoreboardcolorB_dark = '#000000'
 
+# Define fonts
 fontA = 'Comic Sans MS'
 fontB = 'Arial'
+
+# Load icons
+sun_icon = PhotoImage(file = "sun_icon.png")
+moon_icon = PhotoImage(file = "moon_icon.png")
 
 class Game:
 
@@ -67,7 +73,7 @@ class Game:
             self.darkmode = False
             print("Light palette")
             self.switchPage(self.namePage)
-            self.switchpalettebutton.config(text = "Dark")
+            self.switchpalettebutton.config(image = sun_icon)
         
         # Light Mode to Dark Mode
         else:
@@ -83,7 +89,7 @@ class Game:
             self.scoreboardcolorB = scoreboardcolorB_dark
             self.darkmode = True
             self.switchPage(self.namePage)
-            self.switchpalettebutton.config(text = "Light")
+            self.switchpalettebutton.config(image = moon_icon)
             print("Dark palette")
         
 
@@ -418,7 +424,7 @@ class Game:
         self.createTitleLabel("Math Game")
         
         # Defining widgets
-        self.switchpalettebutton = Button(self.frame, text = "Dark", command = self.switchPalette, font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
+        self.switchpalettebutton = Button(self.frame, image = sun_icon, command = self.switchPalette, font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
         namelabel = Label(self.frame, text = "Name:", font = (fontA, 30), fg = self.textcolorB, bg = self.framebgcolor)
         self.nameentry = Entry(self.frame, font = (fontB, 30))
         self.nameerrorlabel = Label(self.frame, text = "", font = (fontA, 20), fg = self.red, bg = self.framebgcolor)
@@ -431,7 +437,7 @@ class Game:
         self.nameentry.insert(0, self.name)
 
         # Place widgets
-        self.switchpalettebutton.place(width = 180, height = 80, relx = 0.15, rely = 0.85, anchor = CENTER)
+        self.switchpalettebutton.place(width = 80, height = 80, relx = 0.1, rely = 0.85, anchor = CENTER)
         namelabel.place(relx = 0.25, rely = 0.5, anchor = CENTER)
         self.nameentry.place(width = 260, height = 80, relx = 0.5, rely = 0.5, anchor = CENTER)
         self.nameerrorlabel.place(relx = 0.5, rely = 0.65, anchor = CENTER)
