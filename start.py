@@ -97,55 +97,20 @@ class Game:
 
     # Verify Name And Age Function
     def verify(self):
-        validname = False
-        validage = False
-
-        # VERIFY NAME 
+        # Get inputs from widgets
         self.name = self.nameentry.get()
-        self.name_nospace = self.name.replace(" ", "")
-        
-        # Set error label text to blank
-        self.nameerrorlabel.config(text = "")
-
-        # If response field is EMPTY
-        if self.name_nospace == "":
-            # Create and place error text under entry box
-            self.nameerrorlabel.config(text = "Enter your name into the box above.")
-            self.nameentry.delete(0, END)
-
-        # If name entered
-        else:
-            validname = True
-
-        # VERIFY AGE MODULE
-        # Set error text to blank
-        self.ageerrorlabel.config(text = "")
         self.age = self.ageentry.get()
 
-        try:
-            # Conversions
-            self.age_nospace = self.age.replace(" ", "")
-        
-            if self.age_nospace == "":
-                # Configure error text under entry box
-                self.ageerrorlabel.config(text = "Enter your age into the box above.")
-                self.ageentry.delete(0, END)
+        # Initialize name and age value
+        validateplayer = Player(self.name, 'N/A', 'N/A', self.age)
 
-            else:
-                self.age_intnospace = int(self.age_nospace)
-                if self.age_intnospace in range(13, 16):
-                    validage = True
-                else:
-                    self.ageerrorlabel.config(text = "Enter a number between 13 and 15.")
-                    self.ageentry.delete(0, END)
-        except:
-            # Configure error text under entry box
-            self.ageerrorlabel.config(text = "Enter a valid number.")
-            self.ageentry.delete(0, END)
+        # Return validity and error messages as tuple and configure labels
+        returnvalues = Player.validate(validateplayer)
+        self.nameerrorlabel.config(text = returnvalues[1])
+        self.ageerrorlabel.config(text = returnvalues[2])
 
-        print(F"Name {validname}. Age {validage}")
-
-        if validname and validage:
+        # Switch page if both inputs valid
+        if returnvalues[0]:
             self.switchPage(self.difficultyPage)
 
     # Title Label Function
