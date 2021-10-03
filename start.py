@@ -10,30 +10,34 @@ root.geometry("840x480")
 textcolorA_light = '#FFFFFF'
 textcolorB_light = '#414141'
 textcolorC_light = '#000000'
-dimtextcolorA_light = '#A3A3A3'
+dimtextcolorA_light = '#B5B5B5'
 
-defaultgray_light = '#F0F0F0'
+framebgcolor_light = '#F0F0F0'
 red_light = '#FF0000'
 green_light = '#1DD600'
 secondarycolor_light = '#4285F4'
 dimred_light = '#AB2C2C'
 dimgreen_light = '#2CAB2C'
-dimsecondarycolor_light = '#48629C'
-dimframebgcolor_light = '#A3A3A3'
+dimsecondarycolor_light = '#2E5EAD'
+dimframebgcolor_light = '#AAAAAA'
 buttoncolor_disabled_light = '#525252'
-barcolor_blank_light = '#666666'
-dimbarcolor_blank_light = '#555555'
+barcolor_blank_light = '#CCCCCC'
+dimbarcolor_blank_light = '#909090'
 scoreboardcolorA_light = '#FFFFFF'
 scoreboardcolorB_light = '#C9DAF8'
 
 # Dark Palette
 textcolor_dark = '#FFFFFF'
-dimtextcolor_dark = '#A3A3A3'
+dimtextcolor_dark = '#939393'
 framebgcolor_dark = '#202020'
 #secondarycolor_dark = '#4C5073'
 secondarycolor_dark = '#686085'
-dimsecondarycolor_dark = '#282B43'
-dimframebgcolor_dark = '#0E0E0E'
+dimred_dark = '#930000'
+dimgreen_dark = '#107B00'
+dimsecondarycolor_dark = '#3B374C'
+dimframebgcolor_dark = '#121212'
+barcolor_blank_dark = '#555555'
+dimbarcolor_blank_dark = '#313131'
 scoreboardcolorA_dark = '#101010'
 scoreboardcolorB_dark = '#000000'
 
@@ -62,13 +66,15 @@ class Game:
             self.textcolorA = textcolorA_light
             self.textcolorB = textcolorB_light
             self.textcolorC = textcolorC_light
-            self.framebgcolor = defaultgray_light
+            self.dimtextcolorA = dimtextcolorA_light
+            self.framebgcolor = framebgcolor_light
             self.red = red_light
             self.textcolorA = textcolorA_light
             self.green = green_light
             self.secondarycolor = secondarycolor_light
             self.dimred = dimred_light
             self.dimgreen = dimgreen_light
+            self.dimbarcolor_blank = dimbarcolor_blank_light
             self.dimsecondarycolor = dimsecondarycolor_light
             self.dimframebgcolor = dimframebgcolor_light
             self.darkmode = False
@@ -81,19 +87,22 @@ class Game:
             self.textcolorA = textcolor_dark
             self.textcolorB = textcolor_dark
             self.textcolorC = textcolor_dark
+            self.dimtextcolorA = dimtextcolor_dark
             self.framebgcolor = framebgcolor_dark
             self.textcolorA = textcolor_dark
             self.secondarycolor = secondarycolor_dark
+            self.barcolor_blank = barcolor_blank_dark
+            self.dimred = dimred_dark
+            self.dimgreen = dimgreen_dark
             self.dimsecondarycolor = dimsecondarycolor_dark
             self.dimframebgcolor = dimframebgcolor_dark
+            self.dimbarcolor_blank = dimbarcolor_blank_dark
             self.scoreboardcolorA = scoreboardcolorA_dark
             self.scoreboardcolorB = scoreboardcolorB_dark
             self.darkmode = True
             self.switchPage(self.namePage)
             self.switchpaletteicon = moon_icon
             self.switchpalettebutton.config(image = self.switchpaletteicon)
-            print("Dark palette")
-        
 
     # Verify Name And Age Function
     def verify(self):
@@ -102,10 +111,10 @@ class Game:
         self.age = self.ageentry.get()
 
         # Initialize name and age value
-        validateplayer = Player(self.name, 'N/A', 'N/A', self.age)
+        currentplayer = Player(self.name, 0, 'N/A', self.age)
 
-        # Return validity and error messages as tuple and configure labels
-        returnvalues = Player.validate(validateplayer)
+        # Configure labels using returned tuple values
+        returnvalues = Player.validate(currentplayer)
         self.nameerrorlabel.config(text = returnvalues[1])
         self.ageerrorlabel.config(text = returnvalues[2])
 
@@ -121,29 +130,23 @@ class Game:
     # Change Difficulty Function
     def changeDifficulty(self):
         
-        if self.difficultyindex <= 1:
-            self.difficultyindex += 1
-        else:
+        if self.difficultyindex == 2:
             self.difficultyindex = 0
-        print(F"changeDifficulty: Difficulty Index Changed to {self.difficultyindex}")
+        else:
+            self.difficultyindex += 1
 
         # Change difficulty button text 
-        difficulty = self.difficulties[self.difficultyindex]
-        self.difficultybutton.config(text = difficulty)
+        self.difficultybutton.config(text = self.difficulties[self.difficultyindex])
 
-        # Change difficulty label text
-        difficultylabel1 = self.difficultylabels1[self.difficultyindex]
-        self.difficultylabel1.config(text = difficultylabel1)
-
-        difficultylabel2 = self.difficultylabels2[self.difficultyindex]
-        self.difficultylabel2.config(text = difficultylabel2)
+        # Change difficulty descriptions text
+        self.difficultylabel1.config(text = self.difficultylabels1[self.difficultyindex])
+        self.difficultylabel2.config(text = self.difficultylabels2[self.difficultyindex])
 
     # Initialize Game Function (Setting variables)
-    def initializeGame(self):
+    def initiateGame(self):
 
         # Set variables
         self.questionindex = 1
-        print(F"Question Index set to {self.questionindex}")
         self.correct = 0
 
         # Create redbars and greenbars lists
@@ -154,7 +157,7 @@ class Game:
         self.barframe = Frame(root, bg = self.framebgcolor)
         self.barframe.place(width = 840, height = 20, x = 420, y = 120, anchor = CENTER)
         
-        # Define bar widgets (Placement in initializeGame ensures new set of bars are not created each question)
+        # Define bar widgets (Placement in initiateGame ensures new set of bars are not created each question)
         self.bar1 = Label(self.barframe, text = "", fg = self.textcolorB, bg = self.barcolor_blank, font = (fontA, 15))
         self.bar2 = Label(self.barframe, text = "", fg = self.textcolorB, bg = self.barcolor_blank, font = (fontA, 15))
         self.bar3 = Label(self.barframe, text = "", fg = self.textcolorB, bg = self.barcolor_blank, font = (fontA, 15))
@@ -184,58 +187,19 @@ class Game:
         # Generate first question
         self.generateQuestion()
 
-    # Generate Question Function
     def generateQuestion(self):
+        # Initialize difficulty
+        currentplayer = Player(self.name, 0, self.difficulty, self.age)
 
-        # Set ranges based on difficulty
-        # Easy
-        if self.difficultyindex == 0:
-            self.addsubmax = 100
-            self.signmax = 1
-
-        # Medium
-        elif self.difficultyindex == 1:
-            self.addsubmax = 100
-            self.muldivmax = 12
-            self.signmax = 3
-
-        # Hard
-        else:
-            self.addsubmax = 1000
-            self.muldivmax = 100
-            self.signmax = 3
-
-        # Generate equation and sign
-        # Sign index, 0 = Addition, 1 = Subtraction, 2 = Multiplication, 4 = Division
-        signindex = random.randint(0, self.signmax)
-
-        # If Addition/Subtraction
-        if signindex <= 1:
-            self.numberone = random.randint(0, self.addsubmax)
-            self.numbertwo = random.randint(0, self.addsubmax)
-            if signindex == 1:
-                self.sign = "+"
-                self.answer = float(self.numberone + self.numbertwo)
-            else:
-                self.sign = "-"
-                self.answer = float(self.numberone - self.numbertwo)
-        
-        # If Multiplication/Division
-        else:
-            self.numberone = random.randint(1, self.muldivmax)
-            self.numbertwo = random.randint(0, self.muldivmax)
-            if signindex == 3:
-                self.sign = "×"
-                self.answer = float(self.numberone * self.numbertwo)
-            else:
-                self.sign = "÷"
-
-                # Logic to make sure answer is a whole number
-                self.numberone = self.numberone * self.numbertwo
-                self.answer = float(self.numberone / self.numbertwo)
+        # Return tuple 
+        returnvalues = Player.generateQuestion(currentplayer)
+        self.numberone = (returnvalues[0])
+        self.numbertwo = (returnvalues[1])
+        self.sign = (returnvalues[2])
+        self.answer = (returnvalues[3])
 
         # Initiate question page
-        print(F"generateQuestion: {self.answer}")
+        print(self.answer)
         self.switchPage(self.questionPage)
 
     # Submit Response Function
@@ -292,6 +256,8 @@ class Game:
 
             # Undo dim barframe (Frame is not destroyed like questionPage and resultPage frames)
             self.barframe.config(bg = self.framebgcolor)
+            for x in self.bars:
+                x.config(bg = self.barcolor_blank)
 
             for x in self.redbars:
                 x.config(bg = self.red, fg = self.textcolorA)
@@ -304,7 +270,6 @@ class Game:
 
             # Add to question index
             self.questionindex += 1
-            print(F"nextQuestion: Question Index changed to {self.questionindex}")
 
             # Generate another question
             self.switchPage(self.generateQuestion)
@@ -330,7 +295,7 @@ class Game:
         self.correct = "{:02d}".format(self.correct)
 
         # Create saveplayer object in Player class
-        saveplayer = Player(self.name, self.correct, self.difficulties[self.difficultyindex], self.age_intnospace)
+        saveplayer = Player(self.name, self.correct, self.difficulties[self.difficultyindex], self.age)
 
         # Log instance of player
         Player.saveProfile(saveplayer)
@@ -360,7 +325,7 @@ class Game:
         self.textcolorB = textcolorB_light
         self.textcolorC = textcolorC_light
         self.dimtextcolorA = dimtextcolorA_light
-        self.framebgcolor = defaultgray_light
+        self.framebgcolor = framebgcolor_light
         self.red = red_light
         self.textcolorA = textcolorA_light
         self.green = green_light
@@ -378,7 +343,7 @@ class Game:
 
         self.darkmode = False
 
-        # Initalize Name page
+        # Initiate Name page
         self.namePage()
 
     # Name Page
@@ -421,18 +386,19 @@ class Game:
         self.createTitleLabel("Select Difficulty")
 
         # Setting starting variables for Change Difficulty Function Loop
-        self.difficultyindex = 0
-        print(F"difficultyPage: Difficulty Index Set to 0")
         self.difficulties = ["Easy", "Medium", "Hard"]
+        self.difficultyindex = 0
+        self.difficulty = self.difficulties[self.difficultyindex]
+        
         self.difficultylabels1 = ["+ / - : Up to 100", "+ / - : Up to 100", "+ / - : Up to 1000"]
         self.difficultylabels2 = ["", "x / ÷ : Up to 12" ,"x / ÷ : Up to 100"]
 
         # Define widgets
         clicktochange = Label(self.frame, text = "Click to Change", font = (fontA, 20), fg = self.textcolorB, bg = self.framebgcolor)
-        self.difficultybutton = Button(self.frame, text = "Easy", command = self.changeDifficulty, font = (fontA, 30), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
-        self.difficultylabel1 = Label(self.frame, text = "+ / - : Up to 100", font = (fontA, 24), fg = self.textcolorB, bg = self.framebgcolor)
-        self.difficultylabel2 = Label(self.frame, text = "", font = (fontA, 24), fg = self.textcolorB, bg = self.framebgcolor)
-        startbutton = Button(self.frame, text = "Start", command = self.initializeGame, font = (fontA, 25), fg = self.textcolorA, bg = self.green, borderwidth = 12)
+        self.difficultybutton = Button(self.frame, text = self.difficulty, command = self.changeDifficulty, font = (fontA, 30), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
+        self.difficultylabel1 = Label(self.frame, text = self.difficultylabels1[self.difficultyindex], font = (fontA, 24), fg = self.textcolorB, bg = self.framebgcolor)
+        self.difficultylabel2 = Label(self.frame, text = self.difficultylabels2[self.difficultyindex], font = (fontA, 24), fg = self.textcolorB, bg = self.framebgcolor)
+        startbutton = Button(self.frame, text = "Start", command = self.initiateGame, font = (fontA, 25), fg = self.textcolorA, bg = self.green, borderwidth = 12)
         backbutton = Button(self.frame, text = "Back", command = lambda: self.switchPage(self.namePage), font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
         
         # Place widgets
@@ -514,13 +480,8 @@ class Game:
         replaybutton.place(width = 180, height = 80, relx = 0.15, rely = 0.85, anchor = CENTER)
         continuebutton.place(width = 180, height = 80, relx = 0.85, rely = 0.85, anchor = CENTER)
 
-        # Initialize profile storing
+        # Initiate profile storing
         self.storeProfiles()
-    
-    # New Player Function
-    def newPlayer(self):
-        self.name = ""
-        self.switchPage(self.namePage)
 
     # Scoreboard Page
     def scoreboardPage(self):
@@ -567,7 +528,7 @@ class Game:
 
         # Defining widgets
         replaybutton = Button(self.frame, text = "Replay", command = lambda: self.switchPage(self.difficultyPage), font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
-        newplayerbutton = Button(self.frame, text = "New Player", command = self.newPlayer, font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
+        newplayerbutton = Button(self.frame, text = "New Player", command = lambda: self.switchPage(self.namePage), font = (fontA, 25), fg = self.textcolorA, bg = self.secondarycolor, borderwidth = 12)
 
         # Place scoreboard rows
         row0.place(x = 0, y = 0, anchor = NW)

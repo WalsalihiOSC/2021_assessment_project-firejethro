@@ -1,3 +1,5 @@
+import random
+
 # Data Encapsulation Class
 class Player:
 
@@ -62,4 +64,56 @@ class Player:
         if validname and validage:
             valid = True
         
+        # Return validity and error texts as tuple
         return valid, nameerrortext, ageerrortext
+
+    def generateQuestion(self):
+        # Set ranges based on difficulty
+        # Easy
+        if self.savedifficulty == "Easy":
+            self.addsubmax = 100
+            self.signmax = 1
+
+        # Medium
+        elif self.savedifficulty == "Medium":
+            self.addsubmax = 100
+            self.muldivmax = 12
+            self.signmax = 3
+
+        # Hard
+        else:
+            self.addsubmax = 1000
+            self.muldivmax = 100
+            self.signmax = 3
+
+        # Generate equation and sign
+        # Sign index, 0 = Addition, 1 = Subtraction, 2 = Multiplication, 4 = Division
+        signindex = random.randint(0, self.signmax)
+
+        # If Addition/Subtraction
+        if signindex <= 1:
+            self.numberone = random.randint(0, self.addsubmax)
+            self.numbertwo = random.randint(0, self.addsubmax)
+            if signindex == 1:
+                self.sign = "+"
+                self.answer = float(self.numberone + self.numbertwo)
+            else:
+                self.sign = "-"
+                self.answer = float(self.numberone - self.numbertwo)
+        
+        # If Multiplication/Division
+        else:
+            self.numberone = random.randint(1, self.muldivmax)
+            self.numbertwo = random.randint(0, self.muldivmax)
+            if signindex == 3:
+                self.sign = "×"
+                self.answer = float(self.numberone * self.numbertwo)
+            else:
+                self.sign = "÷"
+
+                # Logic to make sure answer is a whole number
+                self.numberone = self.numberone * self.numbertwo
+                self.answer = float(self.numberone / self.numbertwo)
+        
+        # Return values
+        return self.numberone, self.numbertwo, self.sign, self.answer
