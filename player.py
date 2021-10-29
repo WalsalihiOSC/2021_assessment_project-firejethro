@@ -20,7 +20,6 @@ class Player:
         self.savedprofiles = open('savedprofiles.txt', 'a')
         self.savedprofiles.write(self.saveprofiletext)
         self.savedprofiles.close()
-        print(self.saveprofiletext)
 
     # Validate name and age
     def validate(self):  

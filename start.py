@@ -199,7 +199,6 @@ class Game:
         self.answer = (returnvalues[3])
 
         # Initiate question page
-        print(self.answer)
         self.switchPage(self.questionPage)
 
     # Submit Response Function
