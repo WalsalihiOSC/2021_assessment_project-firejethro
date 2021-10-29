@@ -46,6 +46,7 @@ class Player:
             self.age_nospace = self.saveage.replace(" ", "")
         
             if self.age_nospace == "":
+
                 # Configure error text under entry box
                 ageerrortext = "Enter your age into the box above."
 
@@ -58,7 +59,7 @@ class Player:
                     ageerrortext = "Enter a number between 5 and 14."
         except:
             # Configure error text under entry box
-            self.ageerrorlabel = "Enter a valid number."
+            ageerrortext = "Enter a valid whole number."
 
         if validname and validage:
             valid = True

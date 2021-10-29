@@ -318,6 +318,7 @@ class Game:
     # CONSTRUCTOR
     def __init__(self):
         self.name = ""
+        self.age = ""
 
         # Set initial color palette
         self.textcolorA = textcolorA_light
@@ -367,6 +368,7 @@ class Game:
 
         # Enter previously entered name on repeat visits
         self.nameentry.insert(0, self.name)
+        self.ageentry.insert(0, self.age)
 
         # Place widgets
         self.switchpalettebutton.place(width = 72, height = 72, relx = 0.1, rely = 0.85, anchor = CENTER)
