@@ -94,9 +94,11 @@ class Player:
         if signindex <= 1:
             self.numberone = random.randint(0, self.addsubmax)
             self.numbertwo = random.randint(0, self.addsubmax)
+            # Addition
             if signindex == 1:
                 self.sign = "+"
                 self.answer = float(self.numberone + self.numbertwo)
+            # Subtraction
             else:
                 self.sign = "-"
                 self.answer = float(self.numberone - self.numbertwo)
@@ -105,12 +107,13 @@ class Player:
         else:
             self.numberone = random.randint(1, self.muldivmax)
             self.numbertwo = random.randint(0, self.muldivmax)
+            # Multiplication
             if signindex == 3:
                 self.sign = "×"
                 self.answer = float(self.numberone * self.numbertwo)
+            # Division
             else:
                 self.sign = "÷"
-
                 # Logic to make sure answer is a whole number
                 self.numberone = self.numberone * self.numbertwo
                 self.answer = float(self.numberone / self.numbertwo)

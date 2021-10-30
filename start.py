@@ -30,7 +30,6 @@ scoreboardcolorB_light = '#C9DAF8'
 textcolor_dark = '#FFFFFF'
 dimtextcolor_dark = '#939393'
 framebgcolor_dark = '#202020'
-#secondarycolor_dark = '#4C5073'
 secondarycolor_dark = '#686085'
 dimred_dark = '#930000'
 dimgreen_dark = '#107B00'
@@ -60,9 +59,14 @@ class Game:
 
     # Selected Palette
     def switchPalette(self):
+        
+        # Get inputs from entry widgets
+        self.name = self.nameentry.get()
+        self.age = self.ageentry.get()
 
         # Dark Mode to Light Mode
         if self.darkmode:
+            
             self.textcolorA = textcolorA_light
             self.textcolorB = textcolorB_light
             self.textcolorC = textcolorC_light
@@ -81,6 +85,7 @@ class Game:
             self.switchPage(self.namePage)
             self.switchpaletteicon = sun_icon
             self.switchpalettebutton.config(image = self.switchpaletteicon)
+            
         
         # Light Mode to Dark Mode
         else:
@@ -106,7 +111,8 @@ class Game:
 
     # Verify Name And Age Function
     def verify(self):
-        # Get inputs from widgets
+
+        # Get inputs from entry widgets
         self.name = self.nameentry.get()
         self.age = self.ageentry.get()
 
@@ -191,8 +197,9 @@ class Game:
         # Initialize difficulty
         currentplayer = Player(self.name, 0, self.difficulty, self.age)
 
-        # Return tuple 
+        # Return tuple and assign
         returnvalues = Player.generateQuestion(currentplayer)
+
         self.numberone = (returnvalues[0])
         self.numbertwo = (returnvalues[1])
         self.sign = (returnvalues[2])
